@@ -8,7 +8,7 @@
                                                                                                                        \
 public:                                                                                                                \
 	static const std::string nodeClassName;                                                                            \
-	virtual const char *getNodeClassName() const;
+	const char *getNodeClassName() const override;
 
 /**
  * @brief Macro to use inside an abstract node class to make the engine reconize this class as a node.
