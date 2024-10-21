@@ -38,5 +38,6 @@ class Skeleton;
 class ISkinMeshInterface;
 class DynamicSkinMesh;
 class StaticSkinMesh;
+class WireframeShape;
 
 } // namespace Stone::Scene

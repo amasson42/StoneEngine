@@ -80,6 +80,12 @@ public:
 	virtual void updateStaticSkinMesh(const std::shared_ptr<StaticSkinMesh> &skinmesh);
 
 	/**
+	 * @brief Updates the renderer data for a given wireframe shape.
+	 * @param wireframe shape The wireframe shape to be updated.
+	 */
+	virtual void updateWireframeShape(const std::shared_ptr<WireframeShape> &shape);
+
+	/**
 	 * @brief Updates the renderer data for a given texture.
 	 * @param texture The texture to be updated.
 	 */

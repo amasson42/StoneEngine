@@ -10,6 +10,7 @@
 #include "Scene/Node/PivotNode.hpp"
 #include "Scene/Node/SkeletonNode.hpp"
 #include "Scene/Node/SkinMeshNode.hpp"
+#include "Scene/Node/WireframeShape.hpp"
 #include "Scene/Node/WorldNode.hpp"
 #include "Scene/Renderable/Material.hpp"
 #include "Scene/Renderable/Mesh.hpp"

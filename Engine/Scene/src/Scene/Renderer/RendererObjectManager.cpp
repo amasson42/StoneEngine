@@ -19,7 +19,8 @@ const std::unordered_map<std::intptr_t, CastFunction> updateCastedFunctions = {
 	CASTED_FUNCTION_MAP_ENTRY(SkinMeshNode),	CASTED_FUNCTION_MAP_ENTRY(Material),
 	CASTED_FUNCTION_MAP_ENTRY(DynamicMesh),		CASTED_FUNCTION_MAP_ENTRY(StaticMesh),
 	CASTED_FUNCTION_MAP_ENTRY(DynamicSkinMesh), CASTED_FUNCTION_MAP_ENTRY(StaticSkinMesh),
-	CASTED_FUNCTION_MAP_ENTRY(Texture),			CASTED_FUNCTION_MAP_ENTRY(FragmentShader),
+	CASTED_FUNCTION_MAP_ENTRY(WireframeShape),	CASTED_FUNCTION_MAP_ENTRY(Texture),
+	CASTED_FUNCTION_MAP_ENTRY(FragmentShader),
 };
 
 void RendererObjectManager::updateRenderable(const std::shared_ptr<Core::Object> &renderable) {
@@ -87,6 +88,10 @@ void RendererObjectManager::updateStaticSkinMesh(const std::shared_ptr<StaticSki
 	if (skinmesh->getDefaultMaterial() && skinmesh->getDefaultMaterial()->isDirty())
 		updateMaterial(skinmesh->getDefaultMaterial());
 	skinmesh->markUndirty();
+}
+
+void RendererObjectManager::updateWireframeShape(const std::shared_ptr<WireframeShape> &shape) {
+	shape->markUndirty();
 }
 
 void RendererObjectManager::updateTexture(const std::shared_ptr<Texture> &texture) {
