@@ -10,7 +10,7 @@ namespace Stone::Scene {
 STONE_NODE_IMPLEMENTATION(WireframeShape)
 
 WireframeShape::WireframeShape(const std::string &name)
-	: RenderableNode(name), _color(glm::vec3(1.0f)), _thickness(1.0f), _points(), _drawLine(true) {
+	: RenderableNode(name), _color(glm::vec3(1.0f)), _thickness(1.0f), _points(), _drawLine(true), _ignoreDepth(false) {
 }
 
 std::ostream &WireframeShape::writeToStream(std::ostream &stream, bool closing_bracer) const {
@@ -29,7 +29,8 @@ std::ostream &WireframeShape::writeToStream(std::ostream &stream, bool closing_b
 		}
 		stream << "]";
 	}
-	stream << "]";
+	stream << "],drawLine:" << _drawLine;
+	stream << ",ignoreDepth:" << _ignoreDepth;
 	if (closing_bracer)
 		stream << "}";
 	return stream;
@@ -60,6 +61,24 @@ const std::vector<std::vector<glm::vec3>> &WireframeShape::getPoints() const {
 std::vector<std::vector<glm::vec3>> &WireframeShape::pointsRef() {
 	markDirty();
 	return _points;
+}
+
+bool WireframeShape::isDrawingLine() const {
+	return _drawLine;
+}
+
+void WireframeShape::setDrawingLine(bool drawLine) {
+	_drawLine = drawLine;
+	markDirty();
+}
+
+bool WireframeShape::isIgnoringDepth() const {
+	return _ignoreDepth;
+}
+
+void WireframeShape::setIgnoringDepth(bool ignoreDepth) {
+	_ignoreDepth = ignoreDepth;
+	markDirty();
 }
 
 }; // namespace Stone::Scene
