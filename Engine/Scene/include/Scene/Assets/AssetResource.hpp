@@ -4,6 +4,7 @@
 
 #include "Core/Assets/Resource.hpp"
 #include "SceneTypes.hpp"
+#include "Utils/Json.hpp"
 
 namespace Stone::Scene {
 
@@ -34,11 +35,16 @@ public:
 
 	const std::shared_ptr<PivotNode> &getRootNode() const;
 
+	const Json::Object &getMetadatas() const;
+	Json::Object &getMetadatas();
+
 protected:
 	std::vector<std::shared_ptr<IMeshObject>> _meshes;
 	std::vector<std::shared_ptr<Texture>> _textures;
 	std::vector<std::shared_ptr<Material>> _materials;
 	std::shared_ptr<PivotNode> _rootNode;
+
+	Json::Object _metadatas;
 
 	void loadData();
 	void loadFromAssimp();

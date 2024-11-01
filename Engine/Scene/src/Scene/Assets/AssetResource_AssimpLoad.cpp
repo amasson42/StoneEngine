@@ -236,7 +236,83 @@ void loadMaterials(AssetResource &assetResource, const aiScene *scene) {
 	}
 }
 
+std::shared_ptr<Json::Value> loadMetadataEntry(const aiMetadataEntry &entry) {
+	switch (entry.mType) {
+	case AI_BOOL:
+		{
+			const bool data = *static_cast<bool *>(entry.mData);
+			return Json::boolean(data);
+		}
+	case AI_INT32:
+		{
+			const double data = *static_cast<int32_t *>(entry.mData);
+			return Json::number(data);
+		}
+	case AI_UINT64:
+		{
+			const double data = *static_cast<uint64_t *>(entry.mData);
+			return Json::number(data);
+		}
+	case AI_FLOAT:
+		{
+			const double data = *static_cast<float *>(entry.mData);
+			return Json::number(data);
+		}
+	case AI_DOUBLE:
+		{
+			const double data = *static_cast<double *>(entry.mData);
+			return Json::number(data);
+		}
+	case AI_AIVECTOR3D:
+		{
+			const aiVector3D *data = static_cast<aiVector3D *>(entry.mData);
+			Json::Array array_data;
+			array_data.push_back(Json::number(data->x));
+			array_data.push_back(Json::number(data->y));
+			array_data.push_back(Json::number(data->z));
+			return Json::array(array_data);
+		}
+	case AI_AIMETADATA:
+		{
+			const aiMetadata *data = static_cast<aiMetadata *>(entry.mData);
+			Json::Object object_data;
+			for (unsigned int i = 0; i < data->mNumProperties; ++i) {
+				const aiString &key(data->mKeys[i]);
+				const aiMetadataEntry &value(data->mValues[i]);
+				object_data[key.C_Str()] = loadMetadataEntry(value);
+			}
+			return Json::object(object_data);
+		}
+	case AI_INT64:
+		{
+			const double data = *static_cast<int64_t *>(entry.mData);
+			return Json::number(data);
+		}
+	case AI_UINT32:
+		{
+			const double data = *static_cast<uint32_t *>(entry.mData);
+			return Json::number(data);
+		}
+	default: break;
+	}
+	return Json::null();
+}
+
+void loadMetadata(const aiMetadata *metadata, Json::Object &dst) {
+	if (metadata == nullptr)
+		return;
+
+	for (unsigned int i = 0; i < metadata->mNumProperties; ++i) {
+		const aiString &key(metadata->mKeys[i]);
+		const aiMetadataEntry &value(metadata->mValues[i]);
+
+		dst[key.C_Str()] = loadMetadataEntry(value);
+	}
+}
+
 void loadNode(AssetResource &assetResource, const aiNode *node, const std::shared_ptr<PivotNode> &sceneNode) {
+
+	loadMetadata(node->mMetaData, sceneNode->getMetadatas());
 
 	sceneNode->getTransform().setMatrix(convert(node->mTransformation));
 
@@ -292,6 +368,8 @@ void AssetResource::loadFromAssimp() {
 	std::cout << "mNumSkeletons " << scene->mNumSkeletons << " | ";
 	std::cout << "mMetaData " << scene->mMetaData << " | ";
 	std::cout << "mName" << scene->mName.C_Str() << " | " << std::endl;
+
+	loadMetadata(scene->mMetaData, _metadatas);
 
 	/*
 	 * TODO:

@@ -17,6 +17,7 @@ Node::Node(const std::string &name) : Object(), _name(name), _children(), _paren
 std::ostream &Node::writeToStream(std::ostream &stream, bool closing_bracer) const {
 	Object::writeToStream(stream, false);
 	stream << ",name:\"" << _name << "\"";
+	stream << ",metadatas:" << Json::Value(_metadatas).serialize();
 	if (closing_bracer)
 		stream << "}";
 	return stream;
@@ -256,6 +257,14 @@ void Node::writeHierarchy(std::ostream &stream, bool colored, const std::string 
 			_children[i]->writeHierarchy(stream, colored, linePrefix + lastPrefix, "├─", "│ ");
 		}
 	}
+}
+
+const Json::Object &Node::getMetadatas() const {
+	return _metadatas;
+}
+
+Json::Object &Node::getMetadatas() {
+	return _metadatas;
 }
 
 const char *Node::_termClassColor() const {

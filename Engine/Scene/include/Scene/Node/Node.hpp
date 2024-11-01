@@ -6,6 +6,7 @@
 #include "Logging/TermColor.hpp"
 #include "Scene/Node/NodeMacros.hpp"
 #include "Scene/RenderContext.hpp"
+#include "Utils/Json.hpp"
 
 #include <functional>
 #include <vector>
@@ -280,11 +281,27 @@ public:
 	void writeHierarchy(std::ostream &stream, bool colored = true, const std::string &linePrefix = "",
 						const std::string &firstPrefix = "", const std::string &lastPrefix = "") const;
 
+	/**
+	 * @brief Retrieves the metadata associated with the node.
+	 *
+	 * @return A constant reference to the metadata object.
+	 */
+	const Json::Object &getMetadatas() const;
+
+	/**
+	 * @brief Retrieves the metadata associated with the node.
+	 *
+	 * @return A mutable reference to the metadata object.
+	 */
+	Json::Object &getMetadatas();
+
 protected:
 	std::string _name;							  /**< The name of the node. */
 	std::vector<std::shared_ptr<Node>> _children; /**< The children nodes of this node. */
 	std::weak_ptr<Node> _parent;				  /**< The parent node of this node. */
 	std::weak_ptr<WorldNode> _world;			  /**< The world node that this node belongs to. */
+
+	Json::Object _metadatas; /**< Metadata of the node */
 
 	/**
 	 * @brief Gets the class color for terminal output.
