@@ -68,6 +68,14 @@ const std::shared_ptr<PivotNode> &AssetResource::getRootNode() const {
 	return _rootNode;
 }
 
+const Json::Object &AssetResource::getMetadatas() const {
+	return _metadatas;
+}
+
+Json::Object &AssetResource::getMetadatas() {
+	return _metadatas;
+};
+
 
 void AssetResource::loadData() {
 	if (string_ends_with(_filename, ".stone")) {
