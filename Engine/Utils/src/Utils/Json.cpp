@@ -166,7 +166,8 @@ void Parser::_parseObject(Value &out) {
 		const std::string key = _currentToken.value;
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		_parseValue(object[key]);
+		Value &value = object[key];
+		_parseValue(value);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
