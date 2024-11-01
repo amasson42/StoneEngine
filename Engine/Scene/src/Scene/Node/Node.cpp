@@ -17,6 +17,7 @@ Node::Node(const std::string &name) : Object(), _name(name), _children(), _paren
 std::ostream &Node::writeToStream(std::ostream &stream, bool closing_bracer) const {
 	Object::writeToStream(stream, false);
 	stream << ",name:\"" << _name << "\"";
+	stream << ",metadatas:" << Json::Value(_metadatas).serialize();
 	if (closing_bracer)
 		stream << "}";
 	return stream;
