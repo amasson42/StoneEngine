@@ -25,39 +25,39 @@ std::ostream &Material::writeToStream(std::ostream &stream, bool closing_bracer)
 	return stream;
 }
 
-void Material::setTextureParameter(const std::string &name, std::shared_ptr<Texture> texture) {
-	_textures[name] = std::move(texture);
+void Material::setTextureParameter(const Location &location, std::shared_ptr<Texture> texture) {
+	_textures[location] = std::move(texture);
 	markDirty();
 }
 
-std::shared_ptr<Texture> Material::getTextureParameter(const std::string &name) const {
-	auto it = _textures.find(name);
+std::shared_ptr<Texture> Material::getTextureParameter(const Location &location) const {
+	auto it = _textures.find(location);
 	if (it != _textures.end()) {
 		return it->second;
 	}
 	return nullptr;
 }
 
-void Material::setVectorParameter(const std::string &name, const glm::vec3 &vector) {
-	_vectors[name] = vector;
+void Material::setVectorParameter(const Location &location, const glm::vec3 &vector) {
+	_vectors[location] = vector;
 	markDirty();
 }
 
-glm::vec3 Material::getVectorParameter(const std::string &name) const {
-	auto it = _vectors.find(name);
+glm::vec3 Material::getVectorParameter(const Location &location) const {
+	auto it = _vectors.find(location);
 	if (it != _vectors.end()) {
 		return it->second;
 	}
 	return glm::vec3(0.0f);
 }
 
-void Material::setScalarParameter(const std::string &name, float scalar) {
-	_scalars[name] = scalar;
+void Material::setScalarParameter(const Location &location, float scalar) {
+	_scalars[location] = scalar;
 	markDirty();
 }
 
-float Material::getScalarParameter(const std::string &name) const {
-	auto it = _scalars.find(name);
+float Material::getScalarParameter(const Location &location) const {
+	auto it = _scalars.find(location);
 	if (it != _scalars.end()) {
 		return it->second;
 	}
@@ -65,21 +65,20 @@ float Material::getScalarParameter(const std::string &name) const {
 }
 
 void Material::forEachTextures(
-	const std::function<void(std::pair<const std::string, std::shared_ptr<Texture>> &)> &lambda) {
-	for (auto &it : _textures) {
+	const std::function<void(const std::pair<const Location &, std::shared_ptr<Texture>> &)> &lambda) {
+	for (const auto &it : _textures) {
 		lambda(it);
 	}
 }
 
-void Material::forEachVectors(const std::function<void(std::pair<const std::string, glm::vec3> &)> &lambda) {
-	for (auto &it : _vectors) {
+void Material::forEachVectors(const std::function<void(const std::pair<const Location &, glm::vec3> &)> &lambda) {
+	for (const auto &it : _vectors) {
 		lambda(it);
 	}
 }
 
-void Material::forEachScalars(const std::function<void(std::pair<const std::string, float> &)> &lambda) {
-	for (auto &it : _scalars) {
-		it.second += 1;
+void Material::forEachScalars(const std::function<void(const std::pair<const Location &, float> &)> &lambda) {
+	for (const auto &it : _scalars) {
 		lambda(it);
 	}
 }
@@ -91,6 +90,10 @@ void Material::setFragmentShader(std::shared_ptr<FragmentShader> fragmentShader)
 
 const std::shared_ptr<FragmentShader> &Material::getFragmentShader() const {
 	return _fragmentShader;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Material::Location &location) {
+	return stream;
 }
 
 } // namespace Stone::Scene

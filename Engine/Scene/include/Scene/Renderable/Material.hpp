@@ -8,6 +8,7 @@
 #include <functional>
 #include <glm/vec3.hpp>
 #include <unordered_map>
+#include <variant>
 
 namespace Stone::Scene {
 
@@ -24,6 +25,8 @@ class Material : public Core::Object, public IRenderable {
 	STONE_OBJECT(Material)
 
 public:
+	using Location = std::variant<std::string, int>;
+
 	Material() = default;
 	Material(const Material &other) = default;
 
@@ -44,7 +47,7 @@ public:
 	 * @param name The name of the texture parameter.
 	 * @param texture The texture to set.
 	 */
-	void setTextureParameter(const std::string &name, std::shared_ptr<Texture> texture);
+	void setTextureParameter(const Location &name, std::shared_ptr<Texture> texture);
 
 	/**
 	 * @brief Get a texture parameter from the Material.
@@ -52,7 +55,7 @@ public:
 	 * @param name The name of the texture parameter.
 	 * @return The texture parameter as a shared pointer to Texture.
 	 */
-	[[nodiscard]] std::shared_ptr<Texture> getTextureParameter(const std::string &name) const;
+	[[nodiscard]] std::shared_ptr<Texture> getTextureParameter(const Location &location) const;
 
 	/**
 	 * @brief Set a vector parameter for the Material.
@@ -60,7 +63,7 @@ public:
 	 * @param name The name of the vector parameter.
 	 * @param vector The vector to set.
 	 */
-	void setVectorParameter(const std::string &name, const glm::vec3 &vector);
+	void setVectorParameter(const Location &name, const glm::vec3 &vector);
 
 	/**
 	 * @brief Get a vector parameter from the Material.
@@ -68,7 +71,7 @@ public:
 	 * @param name The name of the vector parameter.
 	 * @return The vector parameter as a glm::vec3.
 	 */
-	[[nodiscard]] glm::vec3 getVectorParameter(const std::string &name) const;
+	[[nodiscard]] glm::vec3 getVectorParameter(const Location &name) const;
 
 	/**
 	 * @brief Set a scalar parameter for the Material.
@@ -76,7 +79,7 @@ public:
 	 * @param name The name of the scalar parameter.
 	 * @param scalar The scalar value to set.
 	 */
-	void setScalarParameter(const std::string &name, float scalar);
+	void setScalarParameter(const Location &name, float scalar);
 
 	/**
 	 * @brief Get a scalar parameter from the Material.
@@ -84,28 +87,29 @@ public:
 	 * @param name The name of the scalar parameter.
 	 * @return The scalar parameter as a float.
 	 */
-	[[nodiscard]] float getScalarParameter(const std::string &name) const;
+	[[nodiscard]] float getScalarParameter(const Location &name) const;
 
 	/**
 	 * @brief Iterate over all texture parameters in the Material.
 	 *
 	 * @param lambda The lambda function to call for each texture parameter.
 	 */
-	void forEachTextures(const std::function<void(std::pair<const std::string, std::shared_ptr<Texture>> &)> &lambda);
+	void
+	forEachTextures(const std::function<void(const std::pair<const Location &, std::shared_ptr<Texture>> &)> &lambda);
 
 	/**
 	 * @brief Iterate over all vector parameters in the Material.
 	 *
 	 * @param lambda The lambda function to call for each vector parameter.
 	 */
-	void forEachVectors(const std::function<void(std::pair<const std::string, glm::vec3> &)> &lambda);
+	void forEachVectors(const std::function<void(const std::pair<const Location &, glm::vec3> &)> &lambda);
 
 	/**
 	 * @brief Iterate over all scalar parameters in the Material.
 	 *
 	 * @param lambda The lambda function to call for each scalar parameter.
 	 */
-	void forEachScalars(const std::function<void(std::pair<const std::string, float> &)> &lambda);
+	void forEachScalars(const std::function<void(const std::pair<const Location &, float> &)> &lambda);
 
 	/**
 	 * @brief Set the fragment shader used by the Material.
@@ -122,12 +126,14 @@ public:
 	[[nodiscard]] const std::shared_ptr<FragmentShader> &getFragmentShader() const;
 
 protected:
-	std::unordered_map<std::string, std::shared_ptr<Texture>> _textures; /**< Map of texture parameters. */
-	std::unordered_map<std::string, glm::vec3> _vectors;				 /**< Map of vector parameters. */
-	std::unordered_map<std::string, float> _scalars;					 /**< Map of scalar parameters. */
+	std::unordered_map<Location, std::shared_ptr<Texture>> _textures; /**< Map of texture parameters. */
+	std::unordered_map<Location, glm::vec3> _vectors;				  /**< Map of vector parameters. */
+	std::unordered_map<Location, float> _scalars;					  /**< Map of scalar parameters. */
 
 	std::shared_ptr<FragmentShader>
 		_fragmentShader; /**< The fragment shader used by the material. nullptr means using the standard shader. */
 };
+
+std::ostream &operator<<(std::ostream &stream, const Material::Location &location);
 
 } // namespace Stone::Scene
