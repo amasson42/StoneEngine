@@ -13,8 +13,8 @@ namespace Stone::Json {
 
 struct Value;
 
-using Object = std::unordered_map<std::string, std::shared_ptr<Value>>;
-using Array = std::vector<std::shared_ptr<Value>>;
+using Object = std::unordered_map<std::string, Value>;
+using Array = std::vector<Value>;
 
 struct Value {
 
@@ -46,17 +46,17 @@ struct Value {
 		return std::get<T>(value);
 	}
 
-	static std::shared_ptr<Value> parseString(const std::string &input);
-	static std::shared_ptr<Value> parseFile(const std::string &path);
+	static Value parseString(const std::string &input);
+	static Value parseFile(const std::string &path);
 	std::string serialize() const;
 };
 
-std::shared_ptr<Value> object(const Object &obj = {});
-std::shared_ptr<Value> array(const Array &arr = {});
-std::shared_ptr<Value> string(const std::string &str = "");
-std::shared_ptr<Value> number(double num = 0.0);
-std::shared_ptr<Value> boolean(bool b = false);
-std::shared_ptr<Value> null();
+Value object(const Object &obj = {});
+Value array(const Array &arr = {});
+Value string(const std::string &str = "");
+Value number(double num = 0.0);
+Value boolean(bool b = false);
+Value null();
 
 
 enum class TokenType {
@@ -98,16 +98,16 @@ class Parser {
 public:
 	explicit Parser(const std::string &input);
 
-	std::shared_ptr<Value> parse();
+	void parse(Value &out);
 
 private:
 	Lexer _lexer;
 	Token _currentToken;
 
-	std::shared_ptr<Value> _parseValue();
-	std::shared_ptr<Value> _parseObject();
-	std::shared_ptr<Value> _parseArray();
-	std::shared_ptr<Value> _parsePrimitive();
+	void _parseValue(Value &out);
+	void _parseObject(Value &out);
+	void _parseArray(Value &out);
+	void _parsePrimitive(Value &out);
 	void _consume(TokenType expected);
 };
 

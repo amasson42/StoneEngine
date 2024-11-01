@@ -28,12 +28,14 @@ Value::Value(bool b) : value(b) {
 Value::Value(std::nullptr_t n) : value(n) {
 }
 
-std::shared_ptr<Value> Value::parseString(const std::string &input) {
+Value Value::parseString(const std::string &input) {
+	Value ret;
 	Parser parser(input);
-	return parser.parse();
+	parser.parse(ret);
+	return ret;
 }
 
-std::shared_ptr<Value> Value::parseFile(const std::string &path) {
+Value Value::parseFile(const std::string &path) {
 	return parseString(Utils::readTextFile(path));
 }
 
@@ -42,23 +44,28 @@ std::string Value::serialize() const {
 	return serializer.serialize(*this);
 }
 
-std::shared_ptr<Value> object(const Object &obj) {
-	return std::make_shared<Value>(obj);
+Value object(const Object &obj) {
+	return Value(obj);
 }
-std::shared_ptr<Value> array(const Array &arr) {
-	return std::make_shared<Value>(arr);
+
+Value array(const Array &arr) {
+	return Value(arr);
 }
-std::shared_ptr<Value> string(const std::string &str) {
-	return std::make_shared<Value>(str);
+
+Value string(const std::string &str) {
+	return Value(str);
 }
-std::shared_ptr<Value> number(double num) {
-	return std::make_shared<Value>(num);
+
+Value number(double num) {
+	return Value(num);
 }
-std::shared_ptr<Value> boolean(bool b) {
-	return std::make_shared<Value>(b);
+
+Value boolean(bool b) {
+	return Value(b);
 }
-std::shared_ptr<Value> null() {
-	return std::make_shared<Value>();
+
+Value null() {
+	return Value();
 }
 
 
@@ -136,31 +143,32 @@ Parser::Parser(const std::string &input) : _lexer(input) {
 	_currentToken = _lexer.nextToken();
 }
 
-std::shared_ptr<Value> Parser::parse() {
-	return _parseValue();
+void Parser::parse(Value &out) {
+	return _parseValue(out);
 }
 
-std::shared_ptr<Value> Parser::_parseValue() {
+void Parser::_parseValue(Value &out) {
 	switch (_currentToken.type) {
-	case TokenType::LeftBrace: return _parseObject();
-	case TokenType::LeftBracket: return _parseArray();
+	case TokenType::LeftBrace: return _parseObject(out);
+	case TokenType::LeftBracket: return _parseArray(out);
 	case TokenType::String:
 	case TokenType::Number:
 	case TokenType::True:
 	case TokenType::False:
-	case TokenType::Null: return _parsePrimitive();
+	case TokenType::Null: return _parsePrimitive(out);
 	default: throw std::runtime_error("Unexpected token in input");
 	}
 }
 
-std::shared_ptr<Value> Parser::_parseObject() {
-	Object object;
+void Parser::_parseObject(Value &out) {
+	out.value = Object();
+	Object &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
 		std::string key = _currentToken.value;
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		object[key] = _parseValue();
+		_parseValue(object[key]);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -168,14 +176,15 @@ std::shared_ptr<Value> Parser::_parseObject() {
 		}
 	}
 	_consume(TokenType::RightBrace);
-	return std::make_shared<Value>(object);
 }
 
-std::shared_ptr<Value> Parser::_parseArray() {
-	Array array;
+void Parser::_parseArray(Value &out) {
+	out.value = Array();
+	Array &array(std::get<Array>(out.value));
 	_consume(TokenType::LeftBracket);
 	while (_currentToken.type != TokenType::RightBracket) {
-		array.push_back(_parseValue());
+		array.push_back(Value());
+		_parseValue(array.back());
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -183,21 +192,18 @@ std::shared_ptr<Value> Parser::_parseArray() {
 		}
 	}
 	_consume(TokenType::RightBracket);
-	return std::make_shared<Value>(array);
 }
 
-std::shared_ptr<Value> Parser::_parsePrimitive() {
-	std::shared_ptr<Value> value;
+void Parser::_parsePrimitive(Value &out) {
 	switch (_currentToken.type) {
-	case TokenType::String: value = std::make_shared<Value>(_currentToken.value); break;
-	case TokenType::Number: value = std::make_shared<Value>(std::stod(_currentToken.value)); break;
-	case TokenType::True: value = std::make_shared<Value>(true); break;
-	case TokenType::False: value = std::make_shared<Value>(false); break;
-	case TokenType::Null: value = std::make_shared<Value>(); break;
+	case TokenType::String: out.value = _currentToken.value; break;
+	case TokenType::Number: out.value = std::stod(_currentToken.value); break;
+	case TokenType::True: out.value = true; break;
+	case TokenType::False: out.value = false; break;
+	case TokenType::Null: out.value = std::nullptr_t(); break;
 	default: throw std::runtime_error("Unexpected token in input");
 	}
 	_currentToken = _lexer.nextToken();
-	return value;
 }
 
 void Parser::_consume(TokenType expected) {
@@ -220,7 +226,7 @@ void Serializer::operator()(const Object &object) {
 		if (!first)
 			_ss << ",";
 		_ss << "\"" << pair.first << "\":";
-		std::visit(*this, pair.second->value);
+		std::visit(*this, pair.second.value);
 		first = false;
 	}
 	_ss << "}";
@@ -232,7 +238,7 @@ void Serializer::operator()(const Array &array) {
 	for (const auto &item : array) {
 		if (!first)
 			_ss << ",";
-		std::visit(*this, item->value);
+		std::visit(*this, item.value);
 		first = false;
 	}
 	_ss << "]";
