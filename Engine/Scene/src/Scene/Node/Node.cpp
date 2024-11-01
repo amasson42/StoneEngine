@@ -258,6 +258,14 @@ void Node::writeHierarchy(std::ostream &stream, bool colored, const std::string 
 	}
 }
 
+const Json::Object &Node::getMetadatas() const {
+	return _metadatas;
+}
+
+Json::Object &Node::getMetadatas() {
+	return _metadatas;
+}
+
 const char *Node::_termClassColor() const {
 	return TERM_COLOR_BOLD TERM_COLOR_GRAY;
 }
