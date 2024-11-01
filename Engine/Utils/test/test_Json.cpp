@@ -7,7 +7,8 @@ using namespace Stone;
 TEST(Json, ParseEmptyObject) {
 	std::string jsonString = "{}";
 
-	auto json = Json::Value::parseString(jsonString);
+	Json::Value json;
+	Json::Value::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 	ASSERT_TRUE(json.get<Json::Object>().empty());
@@ -16,7 +17,8 @@ TEST(Json, ParseEmptyObject) {
 TEST(Json, ParseSimpleObject) {
 	std::string jsonString = R"({"name": "John", "age": 30, "isStudent": false})";
 
-	auto json = Json::Value::parseString(jsonString);
+	Json::Value json;
+	Json::Value::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -34,7 +36,8 @@ TEST(Json, ParseSimpleObject) {
 TEST(Json, ParseArray) {
 	std::string jsonString = R"([1, "two", true, null])";
 
-	auto json = Json::Value::parseString(jsonString);
+	Json::Value json;
+	Json::Value::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Array>());
 
@@ -56,7 +59,8 @@ TEST(Json, ParseArray) {
 TEST(Json, ParseNestedObject) {
 	std::string jsonString = R"({"person": {"name": "John", "age": 30}})";
 
-	auto json = Json::Value::parseString(jsonString);
+	Json::Value json;
+	Json::Value::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -74,13 +78,23 @@ TEST(Json, ParseNestedObject) {
 TEST(Json, MalformedJsonThrowsException) {
 	std::string jsonString = R"({"name": "John")"; // Missing closing brace
 
-	EXPECT_THROW({ auto json = Json::Value::parseString(jsonString); }, std::runtime_error);
+	EXPECT_THROW(
+		{
+			Json::Value json;
+			Json::Value::parseString(jsonString, json);
+		},
+		std::runtime_error);
 }
 
 TEST(Json, MalformedJsonThrowsException2) {
 	std::string jsonString = R"({"name": John})"; // No quotes around string
 
-	EXPECT_THROW({ auto json = Json::Value::parseString(jsonString); }, std::runtime_error);
+	EXPECT_THROW(
+		{
+			Json::Value json;
+			Json::Value::parseString(jsonString, json);
+		},
+		std::runtime_error);
 }
 
 /*
@@ -111,7 +125,8 @@ TEST(JsonSerializer, SerializeSimpleObject) {
 		result = value.serialize();
 	}
 
-	auto json = Json::Value::parseString(result);
+	Json::Value json;
+	Json::Value::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -137,7 +152,8 @@ TEST(JsonSerializer, SerializeArray) {
 		result = value.serialize();
 	}
 
-	auto json = Json::Value::parseString(result);
+	Json::Value json;
+	Json::Value::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Array>());
 
@@ -168,7 +184,8 @@ TEST(JsonSerializer, SerializeNestedObject) {
 		result = value.serialize();
 	}
 
-	auto json = Json::Value::parseString(result);
+	Json::Value json;
+	Json::Value::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -205,7 +222,8 @@ TEST(JsonSerializer, SerializeComplexObject) {
 		result = value.serialize();
 	}
 
-	auto json = Json::Value::parseString(result);
+	Json::Value json;
+	Json::Value::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 

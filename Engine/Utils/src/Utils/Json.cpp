@@ -28,15 +28,13 @@ Value::Value(bool b) : value(b) {
 Value::Value(std::nullptr_t n) : value(n) {
 }
 
-Value Value::parseString(const std::string &input) {
-	Value ret;
+void Value::parseString(const std::string &input, Value &out) {
 	Parser parser(input);
-	parser.parse(ret);
-	return ret;
+	parser.parse(out);
 }
 
-Value Value::parseFile(const std::string &path) {
-	return parseString(Utils::readTextFile(path));
+void Value::parseFile(const std::string &path, Value &out) {
+	parseString(Utils::readTextFile(path), out);
 }
 
 std::string Value::serialize() const {
