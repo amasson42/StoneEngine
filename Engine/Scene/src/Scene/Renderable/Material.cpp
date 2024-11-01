@@ -93,6 +93,11 @@ const std::shared_ptr<FragmentShader> &Material::getFragmentShader() const {
 }
 
 std::ostream &operator<<(std::ostream &stream, const Material::Location &location) {
+	if (std::holds_alternative<std::string>(location)) {
+		stream << std::get<std::string>(location);
+	} else {
+		stream << std::get<int>(location);
+	}
 	return stream;
 }
 
