@@ -20,9 +20,9 @@ struct Value {
 
 	std::variant<Object, Array, std::string, double, bool, std::nullptr_t> value;
 
-	explicit Value(Object obj);
-	explicit Value(Array arr);
-	explicit Value(std::string str);
+	explicit Value(const Object &obj);
+	explicit Value(const Array &arr);
+	explicit Value(const std::string &str);
 	explicit Value(double num);
 	explicit Value(bool b);
 	explicit Value(std::nullptr_t n = nullptr);

@@ -10,13 +10,13 @@
 
 namespace Stone::Json {
 
-Value::Value(Object obj) : value(std::move(obj)) {
+Value::Value(const Object &obj) : value(std::move(obj)) {
 }
 
-Value::Value(Array arr) : value(std::move(arr)) {
+Value::Value(const Array &arr) : value(std::move(arr)) {
 }
 
-Value::Value(std::string str) : value(std::move(str)) {
+Value::Value(const std::string &str) : value(std::move(str)) {
 }
 
 Value::Value(double num) : value(num) {
@@ -163,7 +163,7 @@ void Parser::_parseObject(Value &out) {
 	Object &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
-		std::string key = _currentToken.value;
+		const std::string key = _currentToken.value;
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
 		_parseValue(object[key]);
@@ -181,8 +181,7 @@ void Parser::_parseArray(Value &out) {
 	Array &array(std::get<Array>(out.value));
 	_consume(TokenType::LeftBracket);
 	while (_currentToken.type != TokenType::RightBracket) {
-		array.push_back(Value());
-		_parseValue(array.back());
+		_parseValue(array.emplace_back());
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
