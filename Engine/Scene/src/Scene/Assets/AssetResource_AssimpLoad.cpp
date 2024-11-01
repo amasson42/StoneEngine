@@ -236,74 +236,84 @@ void loadMaterials(AssetResource &assetResource, const aiScene *scene) {
 	}
 }
 
+Json::Value loadMetadataEntry(const aiMetadataEntry &entry) {
+	switch (entry.mType) {
+	case AI_BOOL:
+		{
+			const bool data = *static_cast<bool *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_INT32:
+		{
+			const double data = *static_cast<int32_t *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_UINT64:
+		{
+			const double data = *static_cast<uint64_t *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_FLOAT:
+		{
+			const double data = *static_cast<float *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_DOUBLE:
+		{
+			const double data = *static_cast<double *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_AIVECTOR3D:
+		{
+			const aiVector3D *data = static_cast<aiVector3D *>(entry.mData);
+			Json::Array array_data;
+			array_data.push_back(Json::number(data->x));
+			array_data.push_back(Json::number(data->y));
+			array_data.push_back(Json::number(data->z));
+			return Json::Value(array_data);
+		}
+	case AI_AIMETADATA:
+		{
+			const aiMetadata *data = static_cast<aiMetadata *>(entry.mData);
+			Json::Object object_data;
+			for (unsigned int i = 0; i < data->mNumProperties; ++i) {
+				const aiString &key(data->mKeys[i]);
+				const aiMetadataEntry &value(data->mValues[i]);
+				object_data[key.C_Str()] = std::make_shared<Json::Value>(loadMetadataEntry(value));
+			}
+			return Json::Value(object_data);
+		}
+	case AI_INT64:
+		{
+			const double data = *static_cast<int64_t *>(entry.mData);
+			return Json::Value(data);
+		}
+	case AI_UINT32:
+		{
+			const double data = *static_cast<uint32_t *>(entry.mData);
+			return Json::Value(data);
+		}
+	default: break;
+	}
+	return Json::Value();
+}
+
+void loadMetadata(const aiMetadata *metadata, const std::shared_ptr<Node> &sceneNode) {
+	if (metadata == nullptr)
+		return;
+
+	for (unsigned int i = 0; i < metadata->mNumProperties; ++i) {
+		const aiString &key(metadata->mKeys[i]);
+		const aiMetadataEntry &value(metadata->mValues[i]);
+
+		auto &metadatas(sceneNode->getMetadatas());
+		metadatas[key.C_Str()] = loadMetadataEntry(value);
+	}
+}
+
 void loadNode(AssetResource &assetResource, const aiNode *node, const std::shared_ptr<PivotNode> &sceneNode) {
 
-	// TODO: extract in function loadMetadatas
-	if (node->mMetaData) {
-		for (unsigned int i = 0; i < node->mMetaData->mNumProperties; ++i) {
-			const aiString &key(node->mMetaData->mKeys[i]);
-			const aiMetadataEntry &value(node->mMetaData->mValues[i]);
-
-			auto &metadatas(sceneNode->getMetadatas());
-			switch (value.mType) {
-			case AI_BOOL:
-				{
-					const bool data = *static_cast<bool *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_INT32:
-				{
-					const double data = *static_cast<int32_t *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_UINT64:
-				{
-					const double data = *static_cast<uint64_t *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_FLOAT:
-				{
-					const double data = *static_cast<float *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_DOUBLE:
-				{
-					const double data = *static_cast<double *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_AIVECTOR3D:
-				{
-					const aiVector3D *data = static_cast<aiVector3D *>(value.mData);
-					// TODO: Store as array of numbers
-					break;
-				}
-			case AI_AIMETADATA:
-				{
-					const aiMetadata *data = static_cast<aiMetadata *>(value.mData);
-					// TODO: Store as object of json
-					break;
-				}
-			case AI_INT64:
-				{
-					const double data = *static_cast<int64_t *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			case AI_UINT32:
-				{
-					const double data = *static_cast<uint32_t *>(value.mData);
-					metadatas[key.C_Str()] = Json::Value(data);
-					break;
-				}
-			default: break;
-			}
-		}
-	}
+	loadMetadata(node->mMetaData, sceneNode);
 
 	sceneNode->getTransform().setMatrix(convert(node->mTransformation));
 
@@ -360,12 +370,7 @@ void AssetResource::loadFromAssimp() {
 	std::cout << "mMetaData " << scene->mMetaData << " | ";
 	std::cout << "mName" << scene->mName.C_Str() << " | " << std::endl;
 
-	// TODO: parse metadata of the scene in the root node
-	if (scene->mMetaData) {
-		for (unsigned int i = 0; i < scene->mMetaData->mNumProperties; ++i) {
-			std::cout << scene->mMetaData->mKeys[i].C_Str() << "=" << scene->mMetaData->mValues[i].mType << std::endl;
-		}
-	}
+	loadMetadata(scene->mMetaData, _rootNode);
 
 	/*
 	 * TODO:
