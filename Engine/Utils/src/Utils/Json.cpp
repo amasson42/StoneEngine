@@ -182,13 +182,10 @@ void Parser::_parseObject(Value &out) {
 	Object &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
-		const std::string &key = _currentToken.value;
+		const std::string key = _currentToken.value; // Store the key before consuming the tokens
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		object[key] = Value();
-		auto obj_it = object.find(key);
-		assert(obj_it != object.end());
-		_parseValue(obj_it->second);
+		_parseValue(object[key]);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
