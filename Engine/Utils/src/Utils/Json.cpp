@@ -11,13 +11,13 @@
 
 namespace Stone::Json {
 
-Value::Value(const Object &obj) : value(std::move(obj)) {
+Value::Value(const Object &obj) : value(obj) {
 }
 
-Value::Value(const Array &arr) : value(std::move(arr)) {
+Value::Value(const Array &arr) : value(arr) {
 }
 
-Value::Value(const std::string &str) : value(std::move(str)) {
+Value::Value(const std::string &str) : value(str) {
 }
 
 Value::Value(double num) : value(num) {
@@ -179,13 +179,15 @@ void Parser::_parseValue(Value &out) {
 
 void Parser::_parseObject(Value &out) {
 	out.value = Object();
-	Object &object(std::get<Object>(out.value));
+	auto &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
 		const std::string key = _currentToken.value; // Store the key before consuming the tokens
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		_parseValue(object[key]);
+		Value value;
+		_parseValue(value);
+		object[key] = std::move(value);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -197,7 +199,7 @@ void Parser::_parseObject(Value &out) {
 
 void Parser::_parseArray(Value &out) {
 	out.value = Array();
-	Array &array(std::get<Array>(out.value));
+	auto &array(std::get<Array>(out.value));
 	_consume(TokenType::LeftBracket);
 	while (_currentToken.type != TokenType::RightBracket) {
 		_parseValue(array.emplace_back());

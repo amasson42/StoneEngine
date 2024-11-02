@@ -252,8 +252,8 @@ void loadMetadataEntry(const aiMetadataEntry &entry, Json::Value &out) {
 		}
 	case AI_UINT64:
 		{
-			const double data = *static_cast<uint64_t *>(entry.mData);
-			out.value = data;
+			const uint64_t data = *static_cast<uint64_t *>(entry.mData);
+			out.value = static_cast<double>(data);
 			return;
 		}
 	case AI_FLOAT:
@@ -271,17 +271,17 @@ void loadMetadataEntry(const aiMetadataEntry &entry, Json::Value &out) {
 	case AI_AIVECTOR3D:
 		{
 			out.value = Json::Array();
-			Json::Array &array(std::get<Json::Array>(out.value));
+			auto &array(std::get<Json::Array>(out.value));
 			const aiVector3D *data = static_cast<aiVector3D *>(entry.mData);
-			array.push_back(Json::Value(data->x));
-			array.push_back(Json::Value(data->y));
-			array.push_back(Json::Value(data->z));
+			array.emplace_back(data->x);
+			array.emplace_back(data->y);
+			array.emplace_back(data->z);
 			return;
 		}
 	case AI_AIMETADATA:
 		{
 			out.value = Json::Object();
-			Json::Object &object(std::get<Json::Object>(out.value));
+			auto &object(std::get<Json::Object>(out.value));
 			const aiMetadata *data = static_cast<aiMetadata *>(entry.mData);
 			for (unsigned int i = 0; i < data->mNumProperties; ++i) {
 				const aiString &key(data->mKeys[i]);
@@ -289,11 +289,12 @@ void loadMetadataEntry(const aiMetadataEntry &entry, Json::Value &out) {
 				assert(key.C_Str() != nullptr);
 				loadMetadataEntry(value, object[key.C_Str()]);
 			}
+			return;
 		}
 	case AI_INT64:
 		{
-			const double data = *static_cast<int64_t *>(entry.mData);
-			out.value = data;
+			const int64_t data = *static_cast<int64_t *>(entry.mData);
+			out.value = static_cast<double>(data);
 			return;
 		}
 	case AI_UINT32:

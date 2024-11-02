@@ -116,9 +116,9 @@ TEST(JsonSerializer, SerializeSimpleObject) {
 
 	{
 		Json::Object obj;
-		obj["name"] = Json::string("John");
-		obj["age"] = Json::number(30.0);
-		obj["isStudent"] = Json::boolean(false);
+		obj["name"] = "John";
+		obj["age"] = 30.0;
+		obj["isStudent"] = false;
 
 		auto value = Json::object(obj);
 
@@ -211,11 +211,11 @@ TEST(JsonSerializer, SerializeComplexObject) {
 		addressObj["zip"] = Json::string("10001");
 
 		Json::Object obj;
-		obj["name"] = Json::string("John");
-		obj["age"] = Json::number(30.0);
-		obj["isStudent"] = Json::boolean(false);
-		obj["scores"] = Json::array({Json::number(85.5), Json::number(92.0), Json::number(78.5)});
-		obj["address"] = Json::object(addressObj);
+		obj["name"] = "John";
+		obj["age"] = 30.0;
+		obj["isStudent"] = false;
+		obj["scores"] = Json::array({85.5, 92.0, 78.5});
+		obj["address"] = addressObj;
 
 		auto value = Json::object(obj);
 
