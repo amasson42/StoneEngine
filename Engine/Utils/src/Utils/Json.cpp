@@ -11,24 +11,6 @@
 
 namespace Stone::Json {
 
-Value::Value(const Object &obj) : value(obj) {
-}
-
-Value::Value(const Array &arr) : value(arr) {
-}
-
-Value::Value(const std::string &str) : value(str) {
-}
-
-Value::Value(double num) : value(num) {
-}
-
-Value::Value(bool b) : value(b) {
-}
-
-Value::Value(std::nullptr_t n) : value(n) {
-}
-
 void Value::parseString(const std::string &input, Value &out) {
 	Parser parser(input);
 	parser.parse(out);
@@ -44,27 +26,27 @@ std::string Value::serialize() const {
 }
 
 Value object(const Object &obj) {
-	return Value(obj);
+	return {obj};
 }
 
 Value array(const Array &arr) {
-	return Value(arr);
+	return {arr};
 }
 
 Value string(const std::string &str) {
-	return Value(str);
+	return {str};
 }
 
 Value number(double num) {
-	return Value(num);
+	return {num};
 }
 
 Value boolean(bool b) {
-	return Value(b);
+	return {b};
 }
 
 Value null() {
-	return Value();
+	return {};
 }
 
 

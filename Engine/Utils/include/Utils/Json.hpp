@@ -20,12 +20,8 @@ struct Value {
 
 	std::variant<Object, Array, std::string, double, bool, std::nullptr_t> value;
 
-	explicit Value(const Object &obj);
-	explicit Value(const Array &arr);
-	explicit Value(const std::string &str);
-	explicit Value(double num);
-	explicit Value(bool b);
-	explicit Value(std::nullptr_t n = nullptr);
+	Value() : value(nullptr) {
+	}
 
 	template <typename T, typename = std::enable_if_t<std::is_constructible_v<
 							  std::variant<Object, Array, std::string, double, bool, std::nullptr_t>, T>>>
