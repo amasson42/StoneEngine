@@ -5,6 +5,7 @@
 #include "Utils/FileSystem.hpp"
 #include "Utils/StringExt.hpp"
 
+#include <cassert>
 #include <sstream>
 
 
@@ -66,6 +67,24 @@ Value null() {
 	return Value();
 }
 
+
+std::string to_string(TokenType type) {
+	switch (type) {
+	case TokenType::LeftBrace: return "LeftBrace '{'";
+	case TokenType::RightBrace: return "RightBrace '}'";
+	case TokenType::LeftBracket: return "LeftBracket '['";
+	case TokenType::RightBracket: return "RightBracket ']'";
+	case TokenType::Comma: return "Comma ','";
+	case TokenType::Colon: return "Colon ':'";
+	case TokenType::String: return "String";
+	case TokenType::Number: return "Number";
+	case TokenType::True: return "True";
+	case TokenType::False: return "False";
+	case TokenType::Null: return "Null";
+	case TokenType::EndOfFile: return "EndOfFile";
+	default: return "Unknown";
+	}
+}
 
 Lexer::Lexer(const std::string &input) : _input(input) {
 }
@@ -163,11 +182,13 @@ void Parser::_parseObject(Value &out) {
 	Object &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
-		const std::string key = _currentToken.value;
+		const std::string &key = _currentToken.value;
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		Value &value = object[key];
-		_parseValue(value);
+		object[key] = Value();
+		auto obj_it = object.find(key);
+		assert(obj_it != object.end());
+		_parseValue(obj_it->second);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -206,7 +227,7 @@ void Parser::_parsePrimitive(Value &out) {
 
 void Parser::_consume(TokenType expected) {
 	if (_currentToken.type != expected) {
-		throw std::runtime_error("Unexpected token in input");
+		throw std::runtime_error("Expected " + to_string(expected) + ", but got " + _currentToken.value);
 	}
 	_currentToken = _lexer.nextToken();
 }

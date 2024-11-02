@@ -27,6 +27,11 @@ struct Value {
 	explicit Value(bool b);
 	explicit Value(std::nullptr_t n = nullptr);
 
+	template <typename T, typename = std::enable_if_t<std::is_constructible_v<
+							  std::variant<Object, Array, std::string, double, bool, std::nullptr_t>, T>>>
+	Value(T &&val) : value(std::forward<T>(val)) {
+	}
+
 	template <typename T>
 	bool is() const {
 		return std::holds_alternative<T>(value);
@@ -73,6 +78,8 @@ enum class TokenType {
 	Null,
 	EndOfFile
 };
+
+std::string to_string(TokenType type);
 
 struct Token {
 	TokenType type;
