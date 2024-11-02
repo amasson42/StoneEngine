@@ -13,19 +13,20 @@ namespace Stone::Json {
 
 struct Value;
 
-using Object = std::unordered_map<std::string, std::shared_ptr<Value>>;
-using Array = std::vector<std::shared_ptr<Value>>;
+using Object = std::unordered_map<std::string, Value>;
+using Array = std::vector<Value>;
 
 struct Value {
 
 	std::variant<Object, Array, std::string, double, bool, std::nullptr_t> value;
 
-	explicit Value(Object obj);
-	explicit Value(Array arr);
-	explicit Value(std::string str);
-	explicit Value(double num);
-	explicit Value(bool b);
-	explicit Value(std::nullptr_t n = nullptr);
+	Value() : value(nullptr) {
+	}
+
+	template <typename T, typename = std::enable_if_t<std::is_constructible_v<
+							  std::variant<Object, Array, std::string, double, bool, std::nullptr_t>, T>>>
+	Value(T &&val) : value(std::forward<T>(val)) {
+	}
 
 	template <typename T>
 	bool is() const {
@@ -46,17 +47,17 @@ struct Value {
 		return std::get<T>(value);
 	}
 
-	static std::shared_ptr<Value> parseString(const std::string &input);
-	static std::shared_ptr<Value> parseFile(const std::string &path);
+	static void parseString(const std::string &input, Value &out);
+	static void parseFile(const std::string &path, Value &out);
 	std::string serialize() const;
 };
 
-std::shared_ptr<Value> object(const Object &obj = {});
-std::shared_ptr<Value> array(const Array &arr = {});
-std::shared_ptr<Value> string(const std::string &str = "");
-std::shared_ptr<Value> number(double num = 0.0);
-std::shared_ptr<Value> boolean(bool b = false);
-std::shared_ptr<Value> null();
+Value object(const Object &obj = {});
+Value array(const Array &arr = {});
+Value string(const std::string &str = "");
+Value number(double num = 0.0);
+Value boolean(bool b = false);
+Value null();
 
 
 enum class TokenType {
@@ -73,6 +74,8 @@ enum class TokenType {
 	Null,
 	EndOfFile
 };
+
+std::string to_string(TokenType type);
 
 struct Token {
 	TokenType type;
@@ -98,16 +101,16 @@ class Parser {
 public:
 	explicit Parser(const std::string &input);
 
-	std::shared_ptr<Value> parse();
+	void parse(Value &out);
 
 private:
 	Lexer _lexer;
 	Token _currentToken;
 
-	std::shared_ptr<Value> _parseValue();
-	std::shared_ptr<Value> _parseObject();
-	std::shared_ptr<Value> _parseArray();
-	std::shared_ptr<Value> _parsePrimitive();
+	void _parseValue(Value &out);
+	void _parseObject(Value &out);
+	void _parseArray(Value &out);
+	void _parsePrimitive(Value &out);
 	void _consume(TokenType expected);
 };
 
