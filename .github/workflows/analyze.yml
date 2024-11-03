@@ -11,6 +11,7 @@ on:
       - '**/CMakeLists.txt'
       - '**/.clang-tidy'
       - '**/.clang-format'
+  workflow_dispatch:
 
 env:
   home: /home/runner
