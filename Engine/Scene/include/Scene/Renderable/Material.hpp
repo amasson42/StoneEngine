@@ -44,15 +44,15 @@ public:
 	/**
 	 * @brief Set a texture parameter for the Material.
 	 *
-	 * @param name The name of the texture parameter.
+	 * @param location The location of the texture parameter.
 	 * @param texture The texture to set.
 	 */
-	void setTextureParameter(const Location &name, std::shared_ptr<Texture> texture);
+	void setTextureParameter(const Location &location, std::shared_ptr<Texture> texture);
 
 	/**
 	 * @brief Get a texture parameter from the Material.
 	 *
-	 * @param name The name of the texture parameter.
+	 * @param location The location of the texture parameter.
 	 * @return The texture parameter as a shared pointer to Texture.
 	 */
 	[[nodiscard]] std::shared_ptr<Texture> getTextureParameter(const Location &location) const;
@@ -60,34 +60,34 @@ public:
 	/**
 	 * @brief Set a vector parameter for the Material.
 	 *
-	 * @param name The name of the vector parameter.
+	 * @param location The location of the vector parameter.
 	 * @param vector The vector to set.
 	 */
-	void setVectorParameter(const Location &name, const glm::vec3 &vector);
+	void setVectorParameter(const Location &location, const glm::vec3 &vector);
 
 	/**
 	 * @brief Get a vector parameter from the Material.
 	 *
-	 * @param name The name of the vector parameter.
+	 * @param location The location of the vector parameter.
 	 * @return The vector parameter as a glm::vec3.
 	 */
-	[[nodiscard]] glm::vec3 getVectorParameter(const Location &name) const;
+	[[nodiscard]] glm::vec3 getVectorParameter(const Location &location) const;
 
 	/**
 	 * @brief Set a scalar parameter for the Material.
 	 *
-	 * @param name The name of the scalar parameter.
+	 * @param location The location of the scalar parameter.
 	 * @param scalar The scalar value to set.
 	 */
-	void setScalarParameter(const Location &name, float scalar);
+	void setScalarParameter(const Location &location, float scalar);
 
 	/**
 	 * @brief Get a scalar parameter from the Material.
 	 *
-	 * @param name The name of the scalar parameter.
+	 * @param location The location of the scalar parameter.
 	 * @return The scalar parameter as a float.
 	 */
-	[[nodiscard]] float getScalarParameter(const Location &name) const;
+	[[nodiscard]] float getScalarParameter(const Location &location) const;
 
 	/**
 	 * @brief Iterate over all texture parameters in the Material.
