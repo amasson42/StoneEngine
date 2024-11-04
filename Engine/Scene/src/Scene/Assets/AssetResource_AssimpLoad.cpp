@@ -268,6 +268,12 @@ void loadMetadataEntry(const aiMetadataEntry &entry, Json::Value &out) {
 			out.value = data;
 			return;
 		}
+	case AI_AISTRING:
+		{
+			const aiString *data = static_cast<aiString *>(entry.mData);
+			out.value = data->C_Str();
+			return;
+		}
 	case AI_AIVECTOR3D:
 		{
 			out.value = Json::Array();
