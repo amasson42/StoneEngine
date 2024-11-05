@@ -240,69 +240,88 @@ void loadMaterials(AssetResource &assetResource, const aiScene *scene) {
 	}
 }
 
-std::shared_ptr<Json::Value> loadMetadataEntry(const aiMetadataEntry &entry) {
+void loadMetadataEntry(const aiMetadataEntry &entry, Json::Value &out) {
 	switch (entry.mType) {
 	case AI_BOOL:
 		{
 			const bool data = *static_cast<bool *>(entry.mData);
-			return Json::boolean(data);
+			out.value = data;
+			return;
 		}
 	case AI_INT32:
 		{
 			const double data = *static_cast<int32_t *>(entry.mData);
-			return Json::number(data);
+			out.value = data;
+			return;
 		}
 	case AI_UINT64:
 		{
-			const double data = *static_cast<uint64_t *>(entry.mData);
-			return Json::number(data);
+			const uint64_t data = *static_cast<uint64_t *>(entry.mData);
+			out.value = static_cast<double>(data);
+			return;
 		}
 	case AI_FLOAT:
 		{
 			const double data = *static_cast<float *>(entry.mData);
-			return Json::number(data);
+			out.value = data;
+			return;
 		}
 	case AI_DOUBLE:
 		{
 			const double data = *static_cast<double *>(entry.mData);
-			return Json::number(data);
+			out.value = data;
+			return;
+		}
+	case AI_AISTRING:
+		{
+			const aiString *data = static_cast<aiString *>(entry.mData);
+			out.value = data->C_Str();
+			return;
 		}
 	case AI_AIVECTOR3D:
 		{
+			out.value = Json::Array();
+			auto &array(std::get<Json::Array>(out.value));
 			const aiVector3D *data = static_cast<aiVector3D *>(entry.mData);
-			Json::Array array_data;
-			array_data.push_back(Json::number(data->x));
-			array_data.push_back(Json::number(data->y));
-			array_data.push_back(Json::number(data->z));
-			return Json::array(array_data);
+			array.emplace_back(data->x);
+			array.emplace_back(data->y);
+			array.emplace_back(data->z);
+			return;
 		}
 	case AI_AIMETADATA:
 		{
+			out.value = Json::Object();
+			auto &object(std::get<Json::Object>(out.value));
 			const aiMetadata *data = static_cast<aiMetadata *>(entry.mData);
-			Json::Object object_data;
 			for (unsigned int i = 0; i < data->mNumProperties; ++i) {
 				const aiString &key(data->mKeys[i]);
 				const aiMetadataEntry &value(data->mValues[i]);
-				object_data[key.C_Str()] = loadMetadataEntry(value);
+				assert(key.C_Str() != nullptr);
+				loadMetadataEntry(value, object[key.C_Str()]);
 			}
-			return Json::object(object_data);
+			return;
 		}
 	case AI_INT64:
 		{
-			const double data = *static_cast<int64_t *>(entry.mData);
-			return Json::number(data);
+			const int64_t data = *static_cast<int64_t *>(entry.mData);
+			out.value = static_cast<double>(data);
+			return;
 		}
 	case AI_UINT32:
 		{
 			const double data = *static_cast<uint32_t *>(entry.mData);
-			return Json::number(data);
+			out.value = data;
+			return;
 		}
-	default: break;
+	default:
+		{
+			out = Json::Value();
+			return;
+		}
 	}
-	return Json::null();
 }
 
-void loadMetadata(const aiMetadata *metadata, Json::Object &dst) {
+void loadMetadata(const aiMetadata *metadata, Json::Object &out) {
 	if (metadata == nullptr)
 		return;
 
@@ -310,7 +329,8 @@ void loadMetadata(const aiMetadata *metadata, Json::Object &dst) {
 		const aiString &key(metadata->mKeys[i]);
 		const aiMetadataEntry &value(metadata->mValues[i]);
 
-		dst[key.C_Str()] = loadMetadataEntry(value);
+		assert(key.C_Str() != nullptr);
+		loadMetadataEntry(value, out[key.C_Str()]);
 	}
 }
 

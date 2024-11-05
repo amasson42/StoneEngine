@@ -5,36 +5,19 @@
 #include "Utils/FileSystem.hpp"
 #include "Utils/StringExt.hpp"
 
+#include <cassert>
 #include <sstream>
 
 
 namespace Stone::Json {
 
-Value::Value(Object obj) : value(std::move(obj)) {
-}
-
-Value::Value(Array arr) : value(std::move(arr)) {
-}
-
-Value::Value(std::string str) : value(std::move(str)) {
-}
-
-Value::Value(double num) : value(num) {
-}
-
-Value::Value(bool b) : value(b) {
-}
-
-Value::Value(std::nullptr_t n) : value(n) {
-}
-
-std::shared_ptr<Value> Value::parseString(const std::string &input) {
+void Value::parseString(const std::string &input, Value &out) {
 	Parser parser(input);
-	return parser.parse();
+	parser.parse(out);
 }
 
-std::shared_ptr<Value> Value::parseFile(const std::string &path) {
-	return parseString(Utils::readTextFile(path));
+void Value::parseFile(const std::string &path, Value &out) {
+	parseString(Utils::readTextFile(path), out);
 }
 
 std::string Value::serialize() const {
@@ -42,25 +25,48 @@ std::string Value::serialize() const {
 	return serializer.serialize(*this);
 }
 
-std::shared_ptr<Value> object(const Object &obj) {
-	return std::make_shared<Value>(obj);
-}
-std::shared_ptr<Value> array(const Array &arr) {
-	return std::make_shared<Value>(arr);
-}
-std::shared_ptr<Value> string(const std::string &str) {
-	return std::make_shared<Value>(str);
-}
-std::shared_ptr<Value> number(double num) {
-	return std::make_shared<Value>(num);
-}
-std::shared_ptr<Value> boolean(bool b) {
-	return std::make_shared<Value>(b);
-}
-std::shared_ptr<Value> null() {
-	return std::make_shared<Value>();
+Value object(const Object &obj) {
+	return {obj};
 }
 
+Value array(const Array &arr) {
+	return {arr};
+}
+
+Value string(const std::string &str) {
+	return {str};
+}
+
+Value number(double num) {
+	return {num};
+}
+
+Value boolean(bool b) {
+	return {b};
+}
+
+Value null() {
+	return {};
+}
+
+
+std::string to_string(TokenType type) {
+	switch (type) {
+	case TokenType::LeftBrace: return "LeftBrace '{'";
+	case TokenType::RightBrace: return "RightBrace '}'";
+	case TokenType::LeftBracket: return "LeftBracket '['";
+	case TokenType::RightBracket: return "RightBracket ']'";
+	case TokenType::Comma: return "Comma ','";
+	case TokenType::Colon: return "Colon ':'";
+	case TokenType::String: return "String";
+	case TokenType::Number: return "Number";
+	case TokenType::True: return "True";
+	case TokenType::False: return "False";
+	case TokenType::Null: return "Null";
+	case TokenType::EndOfFile: return "EndOfFile";
+	default: return "Unknown";
+	}
+}
 
 Lexer::Lexer(const std::string &input) : _input(input) {
 }
@@ -136,31 +142,34 @@ Parser::Parser(const std::string &input) : _lexer(input) {
 	_currentToken = _lexer.nextToken();
 }
 
-std::shared_ptr<Value> Parser::parse() {
-	return _parseValue();
+void Parser::parse(Value &out) {
+	return _parseValue(out);
 }
 
-std::shared_ptr<Value> Parser::_parseValue() {
+void Parser::_parseValue(Value &out) {
 	switch (_currentToken.type) {
-	case TokenType::LeftBrace: return _parseObject();
-	case TokenType::LeftBracket: return _parseArray();
+	case TokenType::LeftBrace: return _parseObject(out);
+	case TokenType::LeftBracket: return _parseArray(out);
 	case TokenType::String:
 	case TokenType::Number:
 	case TokenType::True:
 	case TokenType::False:
-	case TokenType::Null: return _parsePrimitive();
+	case TokenType::Null: return _parsePrimitive(out);
 	default: throw std::runtime_error("Unexpected token in input");
 	}
 }
 
-std::shared_ptr<Value> Parser::_parseObject() {
-	Object object;
+void Parser::_parseObject(Value &out) {
+	out.value = Object();
+	auto &object(std::get<Object>(out.value));
 	_consume(TokenType::LeftBrace);
 	while (_currentToken.type != TokenType::RightBrace) {
-		std::string key = _currentToken.value;
+		const std::string key = _currentToken.value; // Store the key before consuming the tokens
 		_consume(TokenType::String);
 		_consume(TokenType::Colon);
-		object[key] = _parseValue();
+		Value value;
+		_parseValue(value);
+		object[key] = std::move(value);
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -168,14 +177,14 @@ std::shared_ptr<Value> Parser::_parseObject() {
 		}
 	}
 	_consume(TokenType::RightBrace);
-	return std::make_shared<Value>(object);
 }
 
-std::shared_ptr<Value> Parser::_parseArray() {
-	Array array;
+void Parser::_parseArray(Value &out) {
+	out.value = Array();
+	auto &array(std::get<Array>(out.value));
 	_consume(TokenType::LeftBracket);
 	while (_currentToken.type != TokenType::RightBracket) {
-		array.push_back(_parseValue());
+		_parseValue(array.emplace_back());
 		if (_currentToken.type == TokenType::Comma) {
 			_consume(TokenType::Comma);
 		} else {
@@ -183,26 +192,23 @@ std::shared_ptr<Value> Parser::_parseArray() {
 		}
 	}
 	_consume(TokenType::RightBracket);
-	return std::make_shared<Value>(array);
 }
 
-std::shared_ptr<Value> Parser::_parsePrimitive() {
-	std::shared_ptr<Value> value;
+void Parser::_parsePrimitive(Value &out) {
 	switch (_currentToken.type) {
-	case TokenType::String: value = std::make_shared<Value>(_currentToken.value); break;
-	case TokenType::Number: value = std::make_shared<Value>(std::stod(_currentToken.value)); break;
-	case TokenType::True: value = std::make_shared<Value>(true); break;
-	case TokenType::False: value = std::make_shared<Value>(false); break;
-	case TokenType::Null: value = std::make_shared<Value>(); break;
+	case TokenType::String: out.value = _currentToken.value; break;
+	case TokenType::Number: out.value = std::stod(_currentToken.value); break;
+	case TokenType::True: out.value = true; break;
+	case TokenType::False: out.value = false; break;
+	case TokenType::Null: out.value = std::nullptr_t(); break;
 	default: throw std::runtime_error("Unexpected token in input");
 	}
 	_currentToken = _lexer.nextToken();
-	return value;
 }
 
 void Parser::_consume(TokenType expected) {
 	if (_currentToken.type != expected) {
-		throw std::runtime_error("Unexpected token in input");
+		throw std::runtime_error("Expected " + to_string(expected) + ", but got " + _currentToken.value);
 	}
 	_currentToken = _lexer.nextToken();
 }
@@ -220,7 +226,7 @@ void Serializer::operator()(const Object &object) {
 		if (!first)
 			_ss << ",";
 		_ss << "\"" << pair.first << "\":";
-		std::visit(*this, pair.second->value);
+		std::visit(*this, pair.second.value);
 		first = false;
 	}
 	_ss << "}";
@@ -232,7 +238,7 @@ void Serializer::operator()(const Array &array) {
 	for (const auto &item : array) {
 		if (!first)
 			_ss << ",";
-		std::visit(*this, item->value);
+		std::visit(*this, item.value);
 		first = false;
 	}
 	_ss << "]";
