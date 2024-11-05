@@ -58,9 +58,9 @@ const std::vector<std::vector<glm::vec3>> &WireframeShape::getPoints() const {
 	return _points;
 }
 
-std::vector<std::vector<glm::vec3>> &WireframeShape::pointsRef() {
+void WireframeShape::withPointsRef(const std::function<void(std::vector<std::vector<glm::vec3>> &)> &func) {
+	func(_points);
 	markDirty();
-	return _points;
 }
 
 bool WireframeShape::isDrawingLine() const {

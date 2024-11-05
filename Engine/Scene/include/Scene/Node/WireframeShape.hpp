@@ -78,12 +78,13 @@ public:
 	 * @return A constant reference to a vector of vectors of glm::vec3 representing the points of the wireframe shape.
 	 */
 	[[nodiscard]] const std::vector<std::vector<glm::vec3>> &getPoints() const;
+
 	/**
-	 * @brief Returns a reference to the vector of vector of glm::vec3 points.
+	 * @brief Execute a lambda that receives a mutable reference to the points.
 	 *
-	 * @return std::vector<std::vector<glm::vec3>>& A reference to the vector of vector of glm::vec3 points.
+	 * @note Using this method marks the mesh as dirty after the lambda is fully executed.
 	 */
-	std::vector<std::vector<glm::vec3>> &pointsRef();
+	void withPointsRef(const std::function<void(std::vector<std::vector<glm::vec3>> &)> &func);
 
 	/**
 	 * @brief Checks if the wireframe shape should be drawn as a line.
@@ -127,7 +128,7 @@ public:
 
 		auto [indices, vertices] = generateGeometryMesh(shape, std::forward<Args>(args)...);
 
-		auto &points = wireframeShape->pointsRef().emplace_back();
+		auto &points = wireframeShape->_points.emplace_back();
 		points.reserve(indices.size());
 		for (auto &index : indices) {
 			points.push_back(vertices[index]);

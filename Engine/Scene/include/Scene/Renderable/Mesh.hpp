@@ -55,22 +55,11 @@ public:
 	[[nodiscard]] const std::vector<uint32_t> &getIndices() const;
 
 	/**
-	 * @brief Retrieves a reference to the vector of vertices.
+	 * @brief Execute a lambda that receives a mutable reference to the vertices and indices.
 	 *
-	 * @note Using this method marks the mesh as dirty.
-	 *
-	 * @return A reference to the vector of vertices.
+	 * @note Using this method marks the mesh as dirty after the lambda is fully executed.
 	 */
-	std::vector<Vertex> &verticesRef();
-
-	/**
-	 * @brief Retrieves a reference to the vector of indices.
-	 *
-	 * @note Using this method marks the mesh as dirty.
-	 *
-	 * @return A reference to the vector of indices.
-	 */
-	std::vector<uint32_t> &indicesRef();
+	void withElementsRef(const std::function<void(std::vector<Vertex> &, std::vector<uint32_t> &)> &func);
 
 protected:
 	std::vector<Vertex> _vertices;	/**< The vector of vertices. */

@@ -23,7 +23,7 @@ public:
 	void clearInstances();
 
 	[[nodiscard]] const std::vector<Transform3D> &getInstancesTransforms() const;
-	[[nodiscard]] Transform3D &instanceTransformRef(size_t index);
+	void withInstanceTransforms(const std::function<void(std::vector<Transform3D> &)> &func);
 
 protected:
 	std::vector<Transform3D> _instancesTransforms;
