@@ -1,5 +1,6 @@
 setup_module(
-		NAME networking
+		NAME network
 		TARGET_DEPS logging utils core
+        ENABLE_TESTS
 		FATAL_ERROR
 )

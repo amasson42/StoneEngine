@@ -17,6 +17,7 @@ add_subdirectory(Logging)
 # Layer 2
 add_subdirectory(Core)
 # Layer 3
+add_subdirectory(Network)
 add_subdirectory(Scene)
 # Layer 4
 add_subdirectory(Physics)
