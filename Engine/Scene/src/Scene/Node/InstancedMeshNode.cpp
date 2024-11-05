@@ -37,10 +37,9 @@ const std::vector<Transform3D> &InstancedMeshNode::getInstancesTransforms() cons
 	return _instancesTransforms;
 }
 
-Transform3D &InstancedMeshNode::instanceTransformRef(size_t index) {
-	assert(index < _instancesTransforms.size());
+void InstancedMeshNode::withInstanceTransforms(const std::function<void(std::vector<Transform3D> &)> &func) {
+	func(_instancesTransforms);
 	markDirty();
-	return _instancesTransforms[index];
 }
 
 } // namespace Stone::Scene

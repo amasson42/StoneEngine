@@ -19,20 +19,15 @@ const std::vector<WeightVertex> &DynamicSkinMesh::getVertices() const {
 	return _vertices;
 }
 
-std::vector<WeightVertex> &DynamicSkinMesh::verticesRef() {
-	markDirty();
-	return _vertices;
-}
-
 const std::vector<uint32_t> &DynamicSkinMesh::getIndices() const {
 	return _indices;
 }
 
-std::vector<uint32_t> &DynamicSkinMesh::indicesRef() {
+void DynamicSkinMesh::withElementsRef(
+	const std::function<void(std::vector<WeightVertex> &, std::vector<uint32_t> &)> &func) {
+	func(_vertices, _indices);
 	markDirty();
-	return _indices;
 }
-
 
 std::ostream &StaticSkinMesh::writeToStream(std::ostream &stream, bool closing_bracer) const {
 	Object::writeToStream(stream, false);
