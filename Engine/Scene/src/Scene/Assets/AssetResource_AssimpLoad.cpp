@@ -106,8 +106,10 @@ void loadMesh(AssetResource &assetResource, const aiMesh *mesh) {
 void loadSkinMesh(AssetResource &assetResource, const aiMesh *mesh) {
 	std::shared_ptr<DynamicSkinMesh> newMesh = std::make_shared<DynamicSkinMesh>();
 
-	emplace_vertices(newMesh->verticesRef(), mesh);
-	emplace_indices(newMesh->indicesRef(), mesh);
+	newMesh->withElementsRef([mesh](auto vertices, auto indices) {
+		emplace_vertices(vertices, mesh);
+		emplace_indices(indices, mesh);
+	});
 
 	// TODO: Load bones and weights. REQUIREMENT: Skeleton must be loaded first.
 
