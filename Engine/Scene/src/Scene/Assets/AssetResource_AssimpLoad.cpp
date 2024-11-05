@@ -92,8 +92,10 @@ void emplace_indices(std::vector<uint32_t> &indices, const aiMesh *mesh) {
 void loadMesh(AssetResource &assetResource, const aiMesh *mesh) {
 	std::shared_ptr<DynamicMesh> newMesh = std::make_shared<DynamicMesh>();
 
-	emplace_vertices(newMesh->verticesRef(), mesh);
-	emplace_indices(newMesh->indicesRef(), mesh);
+	newMesh->withElementsRef([mesh](auto vertices, auto indices) {
+		emplace_vertices(vertices, mesh);
+		emplace_indices(indices, mesh);
+	});
 
 	std::shared_ptr<StaticMesh> newStaticMesh = std::make_shared<StaticMesh>();
 	newStaticMesh->setSourceMesh(newMesh);

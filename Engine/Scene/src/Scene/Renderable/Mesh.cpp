@@ -23,14 +23,9 @@ const std::vector<uint32_t> &DynamicMesh::getIndices() const {
 	return _indices;
 }
 
-std::vector<Vertex> &DynamicMesh::verticesRef() {
+void DynamicMesh::withElementsRef(const std::function<void (std::vector<Vertex> &, std::vector<uint32_t> &)>& func) {
+	func(_vertices, _indices);
 	markDirty();
-	return _vertices;
-}
-
-std::vector<uint32_t> &DynamicMesh::indicesRef() {
-	markDirty();
-	return _indices;
 }
 
 
