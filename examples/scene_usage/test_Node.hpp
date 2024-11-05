@@ -1,4 +1,5 @@
 #include "Scene.hpp"
+#include "Utils/Json.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -8,6 +9,9 @@ using namespace Stone::Scene;
 void testNode() {
 	// Create a root node
 	std::shared_ptr<WorldNode> world = std::make_shared<WorldNode>();
+	world->getMetadatas()["description"] = Stone::Json::string("The root node of the scene graph.");
+	world->getMetadatas()["is_root"] = Stone::Json::boolean(true);
+	world->getMetadatas()["version"] = Stone::Json::number(1.0);
 
 	std::shared_ptr<Texture> blank_texture = std::make_shared<Texture>();
 	std::shared_ptr<Material> blank_material = std::make_shared<Material>();
