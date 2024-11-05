@@ -17,7 +17,7 @@
 		Scene::RendererObjectManager::update##RenderableClass((object));                                               \
                                                                                                                        \
 		auto new##RenderableClass = std::make_shared<OpenGL::RenderableClass>(*(object), _renderer);                   \
-		setRendererObjectTo((object).get(), new##RenderableClass);                                                     \
+		updateRendererObject(*(object), new##RenderableClass);                                                         \
 	}
 
 
