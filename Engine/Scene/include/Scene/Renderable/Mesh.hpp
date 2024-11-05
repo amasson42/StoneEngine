@@ -59,7 +59,7 @@ public:
 	 *
 	 * @note Using this method marks the mesh as dirty after the lambda is fully executed.
 	 */
-	void withElementsRef(const std::function<void (std::vector<Vertex> &, std::vector<uint32_t> &)>& func);
+	void withElementsRef(const std::function<void(std::vector<Vertex> &, std::vector<uint32_t> &)> &func);
 
 protected:
 	std::vector<Vertex> _vertices;	/**< The vector of vertices. */
