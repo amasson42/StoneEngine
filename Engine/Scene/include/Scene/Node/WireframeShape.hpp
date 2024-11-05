@@ -84,7 +84,7 @@ public:
 	 *
 	 * @note Using this method marks the mesh as dirty after the lambda is fully executed.
 	 */
-	void withPointsRef(const std::function<void(std::vector<std::vector<glm::vec3>> &)> func);
+	void withPointsRef(const std::function<void(std::vector<std::vector<glm::vec3>> &)> &func);
 
 	/**
 	 * @brief Checks if the wireframe shape should be drawn as a line.
