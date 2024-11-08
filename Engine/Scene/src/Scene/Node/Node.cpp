@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <list>
 
 namespace Stone::Scene {
 
@@ -102,7 +103,7 @@ bool Node::isDescendantOf(const std::shared_ptr<Node> &node) const {
 	return false;
 }
 
-const std::vector<std::shared_ptr<Node>> &Node::getChildren() const {
+const std::list<std::shared_ptr<Node>> &Node::getChildren() const {
 	return _children;
 }
 
@@ -250,11 +251,13 @@ void Node::writeHierarchy(std::ostream &stream, bool colored, const std::string 
 		stream << _name << " [" << getClassName() << "] ";
 	}
 	stream << *this << std::endl;
-	for (size_t i = 0; i < _children.size(); i++) {
-		if (i == _children.size() - 1) {
-			_children[i]->writeHierarchy(stream, colored, linePrefix + lastPrefix, "└─", "  ");
+	std::list<std::shared_ptr<Node>> children;
+	const auto last = children.back();
+	for (auto &child : children) {
+		if (child == last) {
+			child->writeHierarchy(stream, colored, linePrefix + lastPrefix, "└─", "  ");
 		} else {
-			_children[i]->writeHierarchy(stream, colored, linePrefix + lastPrefix, "├─", "│ ");
+			child->writeHierarchy(stream, colored, linePrefix + lastPrefix, "├─", "│ ");
 		}
 	}
 }
