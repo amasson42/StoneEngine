@@ -89,7 +89,7 @@ public:
 
 private:
 	ContentType _contentType = ContentType::SourceCode; /** The type of the content. */
-	std::string _content = "#version 450 core\n";		/** The content of the shader. */
+	std::string _content = "#version 400 core\n";		/** The content of the shader. */
 	std::string _function = "main";						/** The function to call in the shader. */
 
 	std::unordered_map<std::string, int> _locations = {}; /** The binding locations of the variables in the shader. */
