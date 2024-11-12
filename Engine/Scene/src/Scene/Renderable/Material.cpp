@@ -65,21 +65,21 @@ float Material::getScalarParameter(const Location &location) const {
 }
 
 void Material::forEachTextures(
-	const std::function<void(const std::pair<const Location &, std::shared_ptr<Texture>> &)> &lambda) {
+	const std::function<void(const Location &, const std::shared_ptr<Texture> &)> &lambda) const {
 	for (const auto &it : _textures) {
-		lambda(it);
+		lambda(it.first, it.second);
 	}
 }
 
-void Material::forEachVectors(const std::function<void(const std::pair<const Location &, glm::vec3> &)> &lambda) {
+void Material::forEachVectors(const std::function<void(const Location &, glm::vec3)> &lambda) const {
 	for (const auto &it : _vectors) {
-		lambda(it);
+		lambda(it.first, it.second);
 	}
 }
 
-void Material::forEachScalars(const std::function<void(const std::pair<const Location &, float> &)> &lambda) {
+void Material::forEachScalars(const std::function<void(const Location &, float)> &lambda) const {
 	for (const auto &it : _scalars) {
-		lambda(it);
+		lambda(it.first, it.second);
 	}
 }
 

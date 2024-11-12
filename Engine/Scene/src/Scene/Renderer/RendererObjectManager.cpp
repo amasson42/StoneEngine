@@ -56,9 +56,10 @@ void RendererObjectManager::updateMaterial(const std::shared_ptr<Material> &mate
 	if (fragmentShader && fragmentShader->isDirty()) {
 		updateFragmentShader(fragmentShader);
 	}
-	material->forEachTextures([this](const std::pair<const Material::Location &, std::shared_ptr<Texture>> &it) {
-		if (it.second->isDirty())
-			updateTexture(it.second);
+	material->forEachTextures([this](const Material::Location &loc, const std::shared_ptr<Texture> &texture) {
+		(void)loc;
+		if (texture->isDirty())
+			updateTexture(texture);
 	});
 }
 

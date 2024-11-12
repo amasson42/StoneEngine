@@ -84,15 +84,17 @@ void MeshNode::_createDescriptorSetLayout() {
 		auto shader = material->getFragmentShader(); // TODO: Take default fragment shader if none is found
 		if (shader) {
 			material->forEachTextures(
-				[&](const std::pair<const Scene::Material::Location &, std::shared_ptr<Scene::Texture>> &texture) {
+				[&](const Scene::Material::Location &loc, const std::shared_ptr<Scene::Texture> &texture) {
+					(void)texture;
+
 					VkDescriptorSetLayoutBinding samplerLayoutBinding;
 
 					// TODO: Factor this code in scene function
 					int location = -1;
-					if (std::holds_alternative<int>(texture.first)) {
-						location = std::get<int>(texture.first);
-					} else if (std::holds_alternative<std::string>(texture.first)) {
-						location = shader->getLocation(std::get<std::string>(texture.first));
+					if (std::holds_alternative<int>(loc)) {
+						location = std::get<int>(loc);
+					} else if (std::holds_alternative<std::string>(loc)) {
+						location = shader->getLocation(std::get<std::string>(loc));
 					}
 					if (location == -1) {
 						return;
@@ -398,7 +400,8 @@ void MeshNode::_createDescriptorPool(const std::shared_ptr<SwapChain> &swapChain
 		auto shader = material->getFragmentShader();
 		if (shader) {
 			material->forEachTextures(
-				[&](const std::pair<const Scene::Material::Location &, std::shared_ptr<Scene::Texture>> &texture) {
+				[&](const Scene::Material::Location &location, const std::shared_ptr<Scene::Texture> &texture) {
+					(void)location;
 					(void)texture;
 					VkDescriptorPoolSize poolSize = {};
 					poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -461,18 +464,18 @@ void MeshNode::_createDescriptorSets(const std::shared_ptr<SwapChain> &swapChain
 			auto shader = material->getFragmentShader();
 			if (shader) {
 				material->forEachTextures(
-					[&](const std::pair<const Scene::Material::Location &, std::shared_ptr<Scene::Texture>> &texture) {
+					[&](const Scene::Material::Location &loc, const std::shared_ptr<Scene::Texture> &texture) {
 						int location = -1;
-						if (std::holds_alternative<int>(texture.first)) {
-							location = std::get<int>(texture.first);
-						} else if (std::holds_alternative<std::string>(texture.first)) {
-							location = shader->getLocation(std::get<std::string>(texture.first));
+						if (std::holds_alternative<int>(loc)) {
+							location = std::get<int>(loc);
+						} else if (std::holds_alternative<std::string>(loc)) {
+							location = shader->getLocation(std::get<std::string>(loc));
 						}
 						if (location == -1) {
 							return;
 						}
 
-						auto textureObject = texture.second->getRendererObject<Texture>();
+						auto textureObject = texture->getRendererObject<Texture>();
 
 						imagesInfo.push_back({});
 						VkDescriptorImageInfo &imageInfo(imagesInfo.back());

@@ -94,22 +94,21 @@ public:
 	 *
 	 * @param lambda The lambda function to call for each texture parameter.
 	 */
-	void
-	forEachTextures(const std::function<void(const std::pair<const Location &, std::shared_ptr<Texture>> &)> &lambda);
+	void forEachTextures(const std::function<void(const Location &, const std::shared_ptr<Texture> &)> &lambda) const;
 
 	/**
 	 * @brief Iterate over all vector parameters in the Material.
 	 *
 	 * @param lambda The lambda function to call for each vector parameter.
 	 */
-	void forEachVectors(const std::function<void(const std::pair<const Location &, glm::vec3> &)> &lambda);
+	void forEachVectors(const std::function<void(const Location &, glm::vec3)> &lambda) const;
 
 	/**
 	 * @brief Iterate over all scalar parameters in the Material.
 	 *
 	 * @param lambda The lambda function to call for each scalar parameter.
 	 */
-	void forEachScalars(const std::function<void(const std::pair<const Location &, float> &)> &lambda);
+	void forEachScalars(const std::function<void(const Location &, float)> &lambda) const;
 
 	/**
 	 * @brief Set the fragment shader used by the Material.
