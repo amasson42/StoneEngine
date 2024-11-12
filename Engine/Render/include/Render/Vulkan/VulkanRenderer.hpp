@@ -28,7 +28,6 @@ public:
 	/** Renderer */
 
 	void updateDataForWorld(const std::shared_ptr<Scene::WorldNode> &world) override;
-	const Scene::RendererDefaults &getRendererDefaults() const override;
 	void renderWorld(const std::shared_ptr<Scene::WorldNode> &world) override;
 
 	void updateFrameSize(std::pair<uint32_t, uint32_t> size) override;
@@ -50,7 +49,6 @@ private:
 	std::shared_ptr<RenderPass> _renderPass;
 	std::shared_ptr<FramesRenderer> _framesRenderer;
 	std::shared_ptr<SwapChain> _swapChain;
-	std::unique_ptr<Scene::RendererDefaults> _rendererDefaults;
 };
 
 } // namespace Stone::Render::Vulkan

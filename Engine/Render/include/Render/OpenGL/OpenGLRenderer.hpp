@@ -11,7 +11,7 @@ class WorldNode;
 
 namespace Stone::Render::OpenGL {
 
-class RendererDefaults;
+class OpenGLResources;
 
 class OpenGLRenderer : public Renderer {
 public:
@@ -24,17 +24,16 @@ public:
 	/** Renderer */
 
 	void updateDataForWorld(const std::shared_ptr<Scene::WorldNode> &world) override;
-	const Scene::RendererDefaults &getRendererDefaults() const override;
 	void renderWorld(const std::shared_ptr<Scene::WorldNode> &world) override;
 
 	void updateFrameSize(std::pair<uint32_t, uint32_t> size) override;
 
 	void initialize();
-	const RendererDefaults &getOpenGLRendererDefaults() const;
+	const OpenGLResources &getOpenGLResources() const;
 
 private:
 	std::pair<uint32_t, uint32_t> _frameSize;
-	std::unique_ptr<RendererDefaults> _defaults;
+	std::unique_ptr<OpenGLResources> _resources;
 };
 
 } // namespace Stone::Render::OpenGL

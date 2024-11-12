@@ -5,7 +5,6 @@
 #include "Device.hpp"
 #include "FramesRenderer.hpp"
 #include "RenderPass.hpp"
-#include "Scene/Renderer/RendererDefaults.hpp"
 #include "SwapChain.hpp"
 
 namespace Stone::Render::Vulkan {
@@ -20,7 +19,6 @@ VulkanRenderer::VulkanRenderer(RendererSettings &settings) : Renderer() {
 	_renderPass = std::make_shared<RenderPass>(_device, swapChainProperties.surfaceFormat.format);
 	_swapChain = std::make_shared<SwapChain>(_device, _renderPass->getRenderPass(), swapChainProperties);
 	_framesRenderer = std::make_shared<FramesRenderer>(_device, _swapChain->getImageCount());
-	_rendererDefaults = std::make_unique<Scene::RendererDefaults>();
 	assert(_framesRenderer->getImageCount() == _swapChain->getImageCount());
 }
 

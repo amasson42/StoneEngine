@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "../RendererDefaults.hpp"
 #include "Render/OpenGL/OpenGLRenderer.hpp"
 #include "Scene/Renderable/Material.hpp"
 
@@ -28,78 +27,7 @@ public:
 	}
 
 	void render(Scene::RenderContext &context) override {
-		auto getLoc = [this](const char *name) -> GLint {
-			GLint loc = glGetUniformLocation(_lastUsedProgram, name);
-			if (loc == -1) {
-				throw std::runtime_error("Failed to get location of uniform: " + std::string(name));
-			}
-			return loc;
-		};
-
-		glUniformMatrix4fv(getLoc("u_mat_projection"), 1, GL_FALSE, glm::value_ptr(context.mvp.projMatrix));
-		glUniformMatrix4fv(getLoc("u_mat_view"), 1, GL_FALSE, glm::value_ptr(context.mvp.viewMatrix));
-		glUniformMatrix4fv(getLoc("u_mat_model"), 1, GL_FALSE, glm::value_ptr(context.mvp.modelMatrix));
-	}
-
-	void makeMeshProgram() {
-		if (_gl_meshProgram != 0)
-			return;
-
-		if (_renderer.expired())
-			return;
-
-		auto renderer = _renderer.lock();
-
-		auto vertexShader = renderer->getOpenGLRendererDefaults().getMeshVertexShader();
-
-		assert(vertexShader != nullptr);
-
-		// std::shared_ptr<Scene::FragmentShader> fragmentShader =
-		// 	_material.getFragmentShader() ? _material.getFragmentShader() :
-		// 	renderer->getOpenGLRendererDefaults().getFragmentShader();
-
-		// assert(fragmentShader != nullptr);
-
-		auto glFragmentShader = renderer->getOpenGLRendererDefaults().getFragmentShader();
-		//  fragmentShader->getRendererObject<FragmentShader>();
-
-		_gl_meshProgram = glCreateProgram();
-		glAttachShader(_gl_meshProgram, vertexShader->getGLShader());
-		glAttachShader(_gl_meshProgram, glFragmentShader->getGLShader());
-		glLinkProgram(_gl_meshProgram);
-
-		GLint success;
-		glGetProgramiv(_gl_meshProgram, GL_LINK_STATUS, &success);
-		if (!success) {
-			GLchar infoLog[1024];
-			glGetProgramInfoLog(_gl_meshProgram, 1024, nullptr, infoLog);
-			throw std::runtime_error("Failed to link program: " + std::string(infoLog));
-		}
-	}
-
-	void makeSkinMeshProgram() {
-		if (_gl_skinMeshProgram != 0)
-			return;
-	}
-
-	void makeInstancedMeshProgram() {
-		if (_gl_instancedMeshProgram != 0)
-			return;
-	}
-
-	void useMeshProgram() {
-		glUseProgram(_gl_meshProgram);
-		_lastUsedProgram = _gl_meshProgram;
-	}
-
-	void useSkinMeshProgram() {
-		glUseProgram(_gl_skinMeshProgram);
-		_lastUsedProgram = _gl_skinMeshProgram;
-	}
-
-	void useInstancedMeshProgram() {
-		glUseProgram(_gl_instancedMeshProgram);
-		_lastUsedProgram = _gl_instancedMeshProgram;
+		(void)context;
 	}
 
 private:

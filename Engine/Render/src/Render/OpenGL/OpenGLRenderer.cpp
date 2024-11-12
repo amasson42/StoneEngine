@@ -3,11 +3,10 @@
 
 #include "Render/OpenGL/OpenGLRenderer.hpp"
 
+#include "OpenGLResources.hpp"
 #include "RenderContext.hpp"
-#include "RendererDefaults.hpp"
 #include "RendererObjectManager.hpp"
 #include "Scene/Node/WorldNode.hpp"
-#include "Scene/Renderer/RendererDefaults.hpp"
 
 #include <GL/glew.h>
 
@@ -26,7 +25,7 @@ static void initializeOpenGL() {
 }
 
 OpenGLRenderer::OpenGLRenderer(RendererSettings &settings)
-	: Renderer(), _frameSize(settings.frame_size), _defaults(nullptr) {
+	: Renderer(), _frameSize(settings.frame_size), _resources(nullptr) {
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -41,10 +40,6 @@ void OpenGLRenderer::updateDataForWorld(const std::shared_ptr<Scene::WorldNode> 
 			manager.updateRenderable(node);
 		}
 	});
-}
-
-const Scene::RendererDefaults &OpenGLRenderer::getRendererDefaults() const {
-	return *_defaults;
 }
 
 void OpenGLRenderer::renderWorld(const std::shared_ptr<Scene::WorldNode> &world) {
@@ -65,11 +60,11 @@ void OpenGLRenderer::initialize() {
 	initializeOpenGL();
 	std::cout << "OpenGLRenderer created" << std::endl;
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-	_defaults = std::make_unique<RendererDefaults>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));
+	_resources = std::make_unique<OpenGLResources>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));
 }
 
-const RendererDefaults &OpenGLRenderer::getOpenGLRendererDefaults() const {
-	return *_defaults;
+const OpenGLResources &OpenGLRenderer::getOpenGLResources() const {
+	return *_resources;
 }
 
 

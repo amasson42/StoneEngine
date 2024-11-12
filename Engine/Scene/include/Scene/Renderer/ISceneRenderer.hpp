@@ -8,8 +8,6 @@
 
 namespace Stone::Scene {
 
-class RendererDefaults;
-
 /**
  * @brief Interface for a scene renderer.
  */
@@ -19,11 +17,6 @@ public:
 	 * @brief Request the renderer to update all rendering data in the world.
 	 */
 	virtual void updateDataForWorld(const std::shared_ptr<WorldNode> &world) = 0;
-
-	/**
-	 * @brief Get the renderer defaults.
-	 */
-	[[nodiscard]] virtual const RendererDefaults &getRendererDefaults() const = 0;
 
 	/**
 	 * @brief Request the renderer to render the world from the given world root node.

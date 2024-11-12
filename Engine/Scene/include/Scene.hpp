@@ -19,7 +19,6 @@
 #include "Scene/Renderable/Texture.hpp"
 #include "Scene/Renderer/ISceneRenderer.hpp"
 #include "Scene/Renderer/RenderContext.hpp"
-#include "Scene/Renderer/RendererDefaults.hpp"
 #include "Scene/Renderer/RendererObjectManager.hpp"
 #include "Scene/Transform.hpp"
 #include "Scene/Vertex.hpp"

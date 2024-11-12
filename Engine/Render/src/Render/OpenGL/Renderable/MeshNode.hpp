@@ -2,12 +2,12 @@
 
 #pragma once
 
+#include "../OpenGLResources.hpp"
 #include "Material.hpp"
 #include "Mesh.hpp"
 #include "Render/OpenGL/OpenGLRenderer.hpp"
 #include "Scene/Node/MeshNode.hpp"
 #include "Scene/Renderable/Mesh.hpp"
-#include "Scene/Renderer/RendererDefaults.hpp"
 
 #include <GL/glew.h>
 
@@ -23,8 +23,6 @@ public:
 			: meshNode.getMesh() != nullptr && meshNode.getMesh()->getDefaultMaterial() != nullptr
 				? meshNode.getMesh()->getDefaultMaterial()
 				: nullptr;
-
-		usedMaterial->getRendererObject<Material>()->makeMeshProgram();
 	}
 
 	~MeshNode() override = default;
@@ -49,7 +47,6 @@ public:
 
 		std::shared_ptr<Material> material = sceneMaterial->getRendererObject<Material>();
 
-		material->useMeshProgram();
 		material->render(context);
 
 		glEnable(GL_DEPTH_TEST);
