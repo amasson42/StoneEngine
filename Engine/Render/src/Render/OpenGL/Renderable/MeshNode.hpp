@@ -22,7 +22,7 @@ public:
 			meshNode.getMaterial() ? meshNode.getMaterial()
 			: meshNode.getMesh() != nullptr && meshNode.getMesh()->getDefaultMaterial() != nullptr
 				? meshNode.getMesh()->getDefaultMaterial()
-				: renderer->getRendererDefaults().getMaterial();
+				: nullptr;
 
 		usedMaterial->getRendererObject<Material>()->makeMeshProgram();
 	}
@@ -40,10 +40,9 @@ public:
 		}
 		const VRAMMesh &vramMesh = rendererMesh->getVRAMMesh();
 
-		std::shared_ptr<Scene::Material> sceneMaterial = _meshNode.getMaterial() ? _meshNode.getMaterial()
-														 : mesh->getDefaultMaterial()
-															 ? mesh->getDefaultMaterial()
-															 : context.renderer->getRendererDefaults().getMaterial();
+		std::shared_ptr<Scene::Material> sceneMaterial = _meshNode.getMaterial()	  ? _meshNode.getMaterial()
+														 : mesh->getDefaultMaterial() ? mesh->getDefaultMaterial()
+																					  : nullptr;
 
 		assert(sceneMaterial != nullptr);
 		assert(sceneMaterial->isDirty() == false);

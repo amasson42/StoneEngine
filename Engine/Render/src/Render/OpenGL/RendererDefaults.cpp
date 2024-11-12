@@ -7,8 +7,6 @@
 namespace Stone::Render::OpenGL {
 
 RendererDefaults::RendererDefaults(const std::shared_ptr<OpenGLRenderer> &renderer) : Scene::RendererDefaults() {
-	_material = std::make_shared<Scene::Material>();
-
 	_meshFragmentShader = FragmentShader::makeStandardMeshShader(renderer);
 	_meshVertexShader = VertexShader::makeStandardMeshShader(renderer);
 	_skinMeshVertexShader = VertexShader::makeStandardSkinMeshShader(renderer);
