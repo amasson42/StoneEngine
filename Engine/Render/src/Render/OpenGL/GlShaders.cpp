@@ -214,6 +214,7 @@ void GlShaderProgram::setUniform(Scene::Material::Location location, const glm::
 	glUniform3fv(getUniformLocation(location), 1, glm::value_ptr(vec3));
 }
 
+// FIXME: Implement a real way to bind textures to the shader
 void GlShaderProgram::setUniform(Scene::Material::Location location, const Texture &texture) const {
 	glUniform1i(getUniformLocation(location), texture.getGlTexture());
 }

@@ -15,17 +15,18 @@ namespace Stone::Render::OpenGL {
 
 static void initializeOpenGL() {
 	static bool initialized = false;
-	if (!initialized) {
-		glewExperimental = true;
-		if (glewInit() != GLEW_OK) {
-			throw std::runtime_error("Failed to initialize GLEW");
-		}
-		initialized = true;
+	if (initialized)
+		return;
+
+	glewExperimental = true;
+	if (glewInit() != GLEW_OK) {
+		throw std::runtime_error("Failed to initialize GLEW");
 	}
+	initialized = true;
 }
 
-OpenGLRenderer::OpenGLRenderer(RendererSettings &settings)
-	: Renderer(), _frameSize(settings.frame_size), _resources(nullptr) {
+OpenGLRenderer::OpenGLRenderer(RendererSettings &settings) : Renderer(), _frameSize(), _resources(nullptr) {
+	updateFrameSize(settings.frame_size);
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -43,17 +44,26 @@ void OpenGLRenderer::updateDataForWorld(const std::shared_ptr<Scene::WorldNode> 
 }
 
 void OpenGLRenderer::renderWorld(const std::shared_ptr<Scene::WorldNode> &world) {
+
+	// Reset framebuffers
+
 	glViewport(0, 0, static_cast<GLsizei>(_frameSize.first), static_cast<GLsizei>(_frameSize.second));
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	OpenGL::RenderContext context;
+	context.renderer = std::static_pointer_cast<OpenGLRenderer>(shared_from_this());
+	context.gBuffer = _gBuffer.get();
+
 	world->initializeRenderContext(context);
 	world->render(context);
 }
 
 void OpenGLRenderer::updateFrameSize(std::pair<uint32_t, uint32_t> size) {
 	_frameSize = size;
+	if (_gBuffer)
+		_gBuffer.reset();
+	_gBuffer = std::make_unique<GBuffer>(_frameSize.first, _frameSize.second);
 }
 
 void OpenGLRenderer::initialize() {
