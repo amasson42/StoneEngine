@@ -1,7 +1,8 @@
 // Copyright 2024 Stone-Engine
 
-#include "Render/OpenGL/OpenGLRenderer.hpp"
 #include "Render/OpenGL/OpenGLResources.hpp"
+
+#include "Render/OpenGL/OpenGLRenderer.hpp"
 
 namespace Stone::Render::OpenGL {
 

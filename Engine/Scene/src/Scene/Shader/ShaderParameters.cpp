@@ -13,11 +13,11 @@ ShaderParameters::ShaderParameters() : FOR_EACH_SHADER_PARAMETERS(__INITIALIZE_P
 void ShaderParameters::setParamWithName(const std::string &name, Type value) {
 	using ParamSetter = std::function<void(ShaderParameters &, Type)>;
 
-	const static std::unordered_map<std::string, ParamSetter> paramSetters = {
 #define __MAP_NAME_TO_PARAM(param)                                                                                     \
 	{#param, [](ShaderParameters &matParams, Type value) {                                                             \
 		 matParams.param = value;                                                                                      \
 	 }},
+	const static std::unordered_map<std::string, ParamSetter> paramSetters = {
 		FOR_EACH_SHADER_PARAMETERS(__MAP_NAME_TO_PARAM)};
 
 	auto it = paramSetters.find(name);
