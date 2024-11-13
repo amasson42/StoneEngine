@@ -206,20 +206,20 @@ GLint GlShaderProgram::getUniformLocation(const Scene::Material::Location &locat
 	return -1;
 }
 
-void GlShaderProgram::setUniform(Scene::Material::Location location, float scalar) const {
+void GlShaderProgram::setUniform(const Scene::Material::Location &location, float scalar) const {
 	glUniform1f(getUniformLocation(location), scalar);
 }
 
-void GlShaderProgram::setUniform(Scene::Material::Location location, const glm::vec3 &vec3) const {
+void GlShaderProgram::setUniform(const Scene::Material::Location &location, const glm::vec3 &vec3) const {
 	glUniform3fv(getUniformLocation(location), 1, glm::value_ptr(vec3));
 }
 
 // FIXME: Implement a real way to bind textures to the shader
-void GlShaderProgram::setUniform(Scene::Material::Location location, const Texture &texture) const {
+void GlShaderProgram::setUniform(const Scene::Material::Location &location, const Texture &texture) const {
 	glUniform1i(getUniformLocation(location), texture.getGlTexture());
 }
 
-void GlShaderProgram::setUniform(Scene::Material::Location location, const glm::mat4 &mat4) const {
+void GlShaderProgram::setUniform(const Scene::Material::Location &location, const glm::mat4 &mat4) const {
 	glUniformMatrix4fv(getUniformLocation(location), 1, GL_FALSE, glm::value_ptr(mat4));
 }
 

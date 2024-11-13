@@ -73,8 +73,8 @@ void OpenGLRenderer::initialize() {
 	_resources = std::make_shared<OpenGLResources>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));
 }
 
-const OpenGLResources &OpenGLRenderer::getOpenGLResources() const {
-	return *_resources;
+const std::shared_ptr<OpenGLResources> &OpenGLRenderer::getOpenGLResources() const {
+	return _resources;
 }
 
 

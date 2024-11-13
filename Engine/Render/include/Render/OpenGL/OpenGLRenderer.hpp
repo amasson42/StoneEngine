@@ -30,7 +30,7 @@ public:
 	void updateFrameSize(std::pair<uint32_t, uint32_t> size) override;
 
 	void initialize();
-	const OpenGLResources &getOpenGLResources() const;
+	const std::shared_ptr<OpenGLResources> &getOpenGLResources() const;
 
 private:
 	std::pair<uint32_t, uint32_t> _frameSize;
