@@ -60,7 +60,7 @@ void OpenGLRenderer::initialize() {
 	initializeOpenGL();
 	std::cout << "OpenGLRenderer created" << std::endl;
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-	_resources = std::make_unique<OpenGLResources>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));
+	_resources = std::make_shared<OpenGLResources>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));
 }
 
 const OpenGLResources &OpenGLRenderer::getOpenGLResources() const {

@@ -9,6 +9,12 @@ namespace Stone::Scene {
 
 class Material;
 
+enum class MeshType : uint8_t {
+	Standard = 0,
+	Skin = 1,
+	Instanced = 2,
+};
+
 /**
  * @brief Interface for a mesh object of any type.
  *

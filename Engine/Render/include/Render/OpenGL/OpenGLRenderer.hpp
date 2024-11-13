@@ -33,7 +33,7 @@ public:
 
 private:
 	std::pair<uint32_t, uint32_t> _frameSize;
-	std::unique_ptr<OpenGLResources> _resources;
+	std::shared_ptr<OpenGLResources> _resources;
 };
 
 } // namespace Stone::Render::OpenGL
