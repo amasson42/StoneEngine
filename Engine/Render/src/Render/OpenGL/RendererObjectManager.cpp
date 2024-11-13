@@ -2,11 +2,11 @@
 
 #include "RendererObjectManager.hpp"
 
+#include "Renderable/FragmentShader.hpp"
 #include "Renderable/InstancedMeshNode.hpp"
 #include "Renderable/Material.hpp"
 #include "Renderable/Mesh.hpp"
 #include "Renderable/MeshNode.hpp"
-#include "Renderable/Shader.hpp"
 #include "Renderable/SkinMesh.hpp"
 #include "Renderable/SkinMeshNode.hpp"
 #include "Renderable/Texture.hpp"
