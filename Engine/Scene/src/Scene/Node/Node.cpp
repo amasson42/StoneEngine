@@ -251,9 +251,8 @@ void Node::writeHierarchy(std::ostream &stream, bool colored, const std::string 
 		stream << _name << " [" << getClassName() << "] ";
 	}
 	stream << *this << std::endl;
-	std::list<std::shared_ptr<Node>> children;
-	const auto last = children.back();
-	for (auto &child : children) {
+	const auto last = _children.back();
+	for (auto &child : _children) {
 		if (child == last) {
 			child->writeHierarchy(stream, colored, linePrefix + lastPrefix, "└─", "  ");
 		} else {
