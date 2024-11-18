@@ -215,13 +215,12 @@ void Transform3D::calculateTransformMatrix(glm::mat4 &m) const {
 } // namespace Stone::Scene
 
 
-// FIXME: Replace json.serialize with direct output to stream
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform2D &transform) {
 	Stone::Json::Value json = transform.toJson();
-	stream << json.serialize();
+	return stream << json;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform3D &transform) {
 	Stone::Json::Value json = transform.toJson();
-	stream << json.serialize();
+	return stream << json;
 }

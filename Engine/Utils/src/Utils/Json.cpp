@@ -20,9 +20,15 @@ void Value::parseFile(const std::string &path, Value &out) {
 	parseString(Utils::readTextFile(path), out);
 }
 
-std::string Value::serialize() const {
-	Serializer serializer;
+void Value::serialize(std::ostream &stream) const {
+	Serializer serializer(stream);
 	return serializer.serialize(*this);
+}
+
+std::string Value::serialize() const {
+	std::stringstream ss;
+	serialize(ss);
+	return ss.str();
 }
 
 Value object(const Object &obj) {
@@ -214,50 +220,57 @@ void Parser::_consume(TokenType expected) {
 }
 
 
-std::string Serializer::serialize(const Value &value) {
+Serializer::Serializer(std::ostream &stream) : _stream(stream) {
+}
+
+void Serializer::serialize(const Value &value) {
 	std::visit(*this, value.value);
-	return _ss.str();
 }
 
 void Serializer::operator()(const Object &object) {
-	_ss << "{";
+	_stream << "{";
 	bool first = true;
 	for (const auto &pair : object) {
 		if (!first)
-			_ss << ",";
-		_ss << "\"" << pair.first << "\":";
+			_stream << ",";
+		_stream << "\"" << pair.first << "\":";
 		std::visit(*this, pair.second.value);
 		first = false;
 	}
-	_ss << "}";
+	_stream << "}";
 }
 
 void Serializer::operator()(const Array &array) {
-	_ss << "[";
+	_stream << "[";
 	bool first = true;
 	for (const auto &item : array) {
 		if (!first)
-			_ss << ",";
+			_stream << ",";
 		std::visit(*this, item.value);
 		first = false;
 	}
-	_ss << "]";
+	_stream << "]";
 }
 
 void Serializer::operator()(const std::string &str) {
-	_ss << "\"" << escape_string(str) << "\"";
+	_stream << "\"" << escape_string(str) << "\"";
 }
 
 void Serializer::operator()(double num) {
-	_ss << num;
+	_stream << num;
 }
 
 void Serializer::operator()(bool b) {
-	_ss << (b ? "true" : "false");
+	_stream << (b ? "true" : "false");
 }
 
 void Serializer::operator()(std::nullptr_t) {
-	_ss << "null";
+	_stream << "null";
+}
+
+std::ostream &operator<<(std::ostream &os, const Value &value) {
+	value.serialize(os);
+	return os;
 }
 
 } // namespace Stone::Json
