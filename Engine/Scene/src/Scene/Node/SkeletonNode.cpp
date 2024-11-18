@@ -18,9 +18,9 @@ SkeletonNode::SkeletonNode(const std::string &name) : Node(name), _bones() {
 void SkeletonNode::writeToJson(Json::Object &json) const {
 	Node::writeToJson(json);
 
-	Json::Array &bones((json["bones"] = Json::array()).get<Json::Array>());
+	auto &bones_json((json["bones"] = Json::array()).get<Json::Array>());
 	for (const auto &bone : _bones) {
-		bones.push_back(Json::string(bone.pivot.lock()->getGlobalName()));
+		bones_json.push_back(Json::string(bone.pivot.lock()->getGlobalName()));
 	}
 }
 

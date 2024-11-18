@@ -14,7 +14,7 @@ InstancedMeshNode::InstancedMeshNode(const std::string &name) : MeshNode(name), 
 void InstancedMeshNode::writeToJson(Json::Object &json) const {
 	MeshNode::writeToJson(json);
 
-	json["instances"] = Json::number(_instancesTransforms.size());
+	json["instances"] = Json::number(static_cast<double>(_instancesTransforms.size()));
 }
 
 void InstancedMeshNode::addInstance(const Transform3D &transform) {

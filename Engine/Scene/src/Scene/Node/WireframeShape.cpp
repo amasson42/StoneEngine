@@ -21,12 +21,12 @@ void WireframeShape::writeToJson(Json::Object &json) const {
 	json["color"] = to_json(_color);
 	json["thickness"] = Json::number(_thickness);
 
-	auto &points((json["points"] = Json::array()).get<Json::Array>());
-	for (std::size_t i = 0; i < _points.size(); i++) {
-		auto &line((points.emplace_back() = Json::array()).get<Json::Array>());
+	auto &points_json((json["points"] = Json::array()).get<Json::Array>());
+	for (const auto &line : _points) {
+		auto &line_json((points_json.emplace_back() = Json::array()).get<Json::Array>());
 
-		for (std::size_t j = 0; j < _points[i].size(); j++) {
-			line.push_back(to_json(_points[i][j]));
+		for (const auto &point : line) {
+			line_json.push_back(to_json(point));
 		}
 	}
 

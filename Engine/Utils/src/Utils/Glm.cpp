@@ -52,7 +52,7 @@ Json::Value to_json(const glm::ivec3 &v) {
 
 Json::Value to_json(const glm::mat3 &m) {
 	Json::Value json = Json::array();
-	Json::Array &values(json.get<Json::Array>());
+	auto &values(json.get<Json::Array>());
 	for (int i = 0; i < 9; ++i) {
 		values.push_back(Json::number(glm::value_ptr(m)[i]));
 	}
@@ -61,7 +61,7 @@ Json::Value to_json(const glm::mat3 &m) {
 
 Json::Value to_json(const glm::mat4 &m) {
 	Json::Value json = Json::array();
-	Json::Array &values(json.get<Json::Array>());
+	auto &values(json.get<Json::Array>());
 	for (int i = 0; i < 16; ++i) {
 		values.push_back(Json::number(glm::value_ptr(m)[i]));
 	}
