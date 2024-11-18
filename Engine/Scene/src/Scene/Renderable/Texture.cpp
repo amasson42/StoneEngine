@@ -6,12 +6,10 @@
 
 namespace Stone::Scene {
 
-std::ostream &Texture::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",image:" << *_image;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void Texture::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["image"] = _image ? Json::number(_image->getId()) : Json::null();
 }
 
 void Texture::setImage(const std::shared_ptr<Core::Image::ImageSource> &image) {

@@ -17,15 +17,16 @@ uint32_t Object::getId() const {
 	return _id;
 }
 
-std::ostream &Object::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	stream << "{class:\"" << getClassName() << "\",id:" << _id;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void Object::writeToJson(Json::Object &json) const {
+	json["class"] = Json::string(getClassName());
+	json["id"] = Json::number(getId());
 }
 
 } // namespace Stone::Core
 
 std::ostream &operator<<(std::ostream &os, const Stone::Core::Object &obj) {
-	return obj.writeToStream(os, true);
+	Stone::Json::Value json = Stone::Json::object();
+	obj.writeToJson(json.get<Stone::Json::Object>());
+	// FIXME: use output to stream when implemented
+	return os << json.serialize();
 }

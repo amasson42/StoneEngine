@@ -19,7 +19,7 @@ public:
 
 	~SkinMeshNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] std::shared_ptr<ISkinMeshInterface> getSkinMesh() const;
 	void setSkinMesh(std::shared_ptr<ISkinMeshInterface> mesh);

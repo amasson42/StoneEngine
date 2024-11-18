@@ -6,7 +6,6 @@
 #include "Logging/TermColor.hpp"
 #include "Scene/Node/NodeMacros.hpp"
 #include "Scene/Renderer/RenderContext.hpp"
-#include "Utils/Json.hpp"
 
 #include <functional>
 #include <list>
@@ -38,7 +37,7 @@ public:
 	 * @param closing_bracer Whether to write the closing brace '}' after writing the node.
 	 * @return The output stream.
 	 */
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	const static std::string nodeClassName;
 	virtual const char *getNodeClassName() const;

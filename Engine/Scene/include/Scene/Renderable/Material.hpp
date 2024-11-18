@@ -7,8 +7,6 @@
 
 #include <functional>
 #include <glm/vec3.hpp>
-#include <unordered_map>
-#include <variant>
 
 namespace Stone::Scene {
 
@@ -39,7 +37,7 @@ public:
 	 * @param closing_bracer Flag indicating whether to write a closing bracer after writing the Material object.
 	 * @return The output stream after writing the Material object.
 	 */
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	/**
 	 * @brief Set a texture parameter for the Material.
@@ -133,6 +131,7 @@ protected:
 		_fragmentShader; /**< The fragment shader used by the material. nullptr means using the standard shader. */
 };
 
-std::ostream &operator<<(std::ostream &stream, const Material::Location &location);
+std::string location_to_string(const Material::Location &location);
+Material::Location string_to_location(const std::string &str);
 
 } // namespace Stone::Scene

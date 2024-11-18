@@ -2,6 +2,8 @@
 
 #include "Scene/Node/LightNode.hpp"
 
+#include "Utils/Glm.hpp"
+
 namespace Stone::Scene {
 
 STONE_ABSTRACT_NODE_IMPLEMENTATION(LightNode);
@@ -9,13 +11,11 @@ STONE_ABSTRACT_NODE_IMPLEMENTATION(LightNode);
 LightNode::LightNode(const std::string &name) : PivotNode(name), _intensity(1.0f), _color(1.0f) {
 }
 
-std::ostream &LightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	PivotNode::writeToStream(stream, false);
-	stream << ",intensity:" << _intensity;
-	stream << ",color:" << _color;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void LightNode::writeToJson(Json::Object &json) const {
+	PivotNode::writeToJson(json);
+
+	json["intensity"] = Json::number(_intensity);
+	json["color"] = to_json(_color);
 }
 
 bool LightNode::isCastingShadow() const {
@@ -47,8 +47,8 @@ STONE_NODE_IMPLEMENTATION(AmbientLightNode);
 AmbientLightNode::AmbientLightNode(const std::string &name) : LightNode(name) {
 }
 
-std::ostream &AmbientLightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	return LightNode::writeToStream(stream, closing_bracer);
+void AmbientLightNode::writeToJson(Json::Object &json) const {
+	LightNode::writeToJson(json);
 }
 
 STONE_NODE_IMPLEMENTATION(PointLightNode);
@@ -72,13 +72,11 @@ void PointLightNode::setSpecular(const glm::vec3 &specular) {
 	_specular = specular;
 }
 
-std::ostream &PointLightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	LightNode::writeToStream(stream, false);
-	stream << ",attenuation:" << _attenuation;
-	stream << ",specular:" << _specular;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void PointLightNode::writeToJson(Json::Object &json) const {
+	LightNode::writeToJson(json);
+
+	json["attenuation"] = to_json(_attenuation);
+	json["specular"] = to_json(_specular);
 }
 
 STONE_ABSTRACT_NODE_IMPLEMENTATION(CastingLightNode);
@@ -88,15 +86,13 @@ CastingLightNode::CastingLightNode(const std::string &name)
 	  _projectionMatrix(1) {
 }
 
-std::ostream &CastingLightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	LightNode::writeToStream(stream, false);
-	stream << ",castShadow:" << _castShadow;
-	stream << ",shadowClipNear:" << _shadowClipNear;
-	stream << ",shadowClipFar:" << _shadowClipFar;
-	stream << ",shadowMapSize:" << _shadowMapSize;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void CastingLightNode::writeToJson(Json::Object &json) const {
+	LightNode::writeToJson(json);
+
+	json["cast_shadow"] = Json::boolean(_castShadow);
+	json["shadow_clip_near"] = Json::number(_shadowClipNear);
+	json["shadow_clip_far"] = Json::number(_shadowClipFar);
+	json["shadow_map_size"] = to_json(_shadowMapSize);
 }
 
 bool CastingLightNode::isCastingShadow() const {
@@ -148,13 +144,11 @@ DirectionalLightNode::DirectionalLightNode(const std::string &name)
 	_updateProjectionMatrix();
 }
 
-std::ostream &DirectionalLightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	CastingLightNode::writeToStream(stream, false);
-	stream << ",infinite:" << _infinite;
-	stream << ",shadowOrthoSize:" << _shadowOrthoSize;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void DirectionalLightNode::writeToJson(Json::Object &json) const {
+	CastingLightNode::writeToJson(json);
+
+	json["infinite"] = Json::boolean(_infinite);
+	json["shadow_ortho_size"] = to_json(_shadowOrthoSize);
 }
 
 bool DirectionalLightNode::isInfinite() const {
@@ -186,13 +180,11 @@ SpotLightNode::SpotLightNode(const std::string &name)
 	_updateProjectionMatrix();
 }
 
-std::ostream &SpotLightNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	CastingLightNode::writeToStream(stream, false);
-	stream << ",coneAngle:" << _coneAngle;
-	stream << ",coneAttenuation:" << _coneAttenuation;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void SpotLightNode::writeToJson(Json::Object &json) const {
+	CastingLightNode::writeToJson(json);
+
+	json["cone_angle"] = Json::number(_coneAngle);
+	json["cone_attenuation"] = Json::number(_coneAttenuation);
 }
 
 float SpotLightNode::getConeAngle() const {

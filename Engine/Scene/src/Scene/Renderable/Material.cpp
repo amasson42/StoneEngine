@@ -8,21 +8,20 @@
 
 namespace Stone::Scene {
 
-std::ostream &Material::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",textures:{";
+void Material::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	auto &textures((json["textures"] = Json::object()).get<Json::Object>());
 	for (auto &it : _textures)
-		stream << it.first << ":" << (it.second ? std::to_string(it.second->getId()) : "null") << ",";
-	stream << "},vectors:{";
+		textures[location_to_string(it.first)] = it.second ? Json::number(it.second->getId()) : Json::null();
+
+	auto &vectors((json["vectors"] = Json::object()).get<Json::Object>());
 	for (auto &it : _vectors)
-		stream << it.first << ":" << it.second << ",";
-	stream << "},scalars:{";
+		vectors[location_to_string(it.first)] = to_json(it.second);
+
+	auto &scalars((json["scalars"] = Json::object()).get<Json::Object>());
 	for (auto &it : _scalars)
-		stream << it.first << ":" << it.second << ",";
-	stream << "}";
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+		scalars[location_to_string(it.first)] = Json::number(it.second);
 }
 
 void Material::setTextureParameter(const Location &location, std::shared_ptr<Texture> texture) {
@@ -92,13 +91,22 @@ const std::shared_ptr<FragmentShader> &Material::getFragmentShader() const {
 	return _fragmentShader;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Material::Location &location) {
+std::string location_to_string(const Material::Location &location) {
 	if (std::holds_alternative<std::string>(location)) {
-		stream << std::get<std::string>(location);
+		return std::get<std::string>(location);
 	} else {
-		stream << std::get<int>(location);
+		return std::to_string(std::get<int>(location));
 	}
-	return stream;
+}
+
+Material::Location string_to_location(const std::string &str) {
+	if (str.empty()) {
+		return 0;
+	}
+	if (str[0] >= '0' && str[0] <= '9') {
+		return std::stoi(str);
+	}
+	return str;
 }
 
 } // namespace Stone::Scene

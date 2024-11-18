@@ -2,6 +2,8 @@
 
 #include "Scene/Node/Node.hpp"
 
+#include "Scene/Node/WorldNode.hpp"
+
 #include <algorithm>
 #include <cassert>
 #include <list>
@@ -15,13 +17,12 @@ Node::Node(const std::string &name) : Object(), _name(name), _children(), _paren
 	assert(name.find('/') == std::string::npos);
 }
 
-std::ostream &Node::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",name:\"" << _name << "\"";
-	stream << ",metadatas:" << Json::Value(_metadatas).serialize();
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void Node::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["name"] = Json::string(_name);
+	json["metadatas"] = Json::Value(_metadatas);
+	json["world"] = _world.expired() ? Json::null() : Json::number(_world.lock()->getId());
 }
 
 void Node::update(float deltaTime) {

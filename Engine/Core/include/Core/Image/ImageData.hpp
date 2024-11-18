@@ -18,7 +18,7 @@ public:
 
 	~ImageData() override;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] const Size &getSize() const;
 	[[nodiscard]] Channel getChannels() const;

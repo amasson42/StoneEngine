@@ -44,7 +44,7 @@ public:
 	 * @param closing_bracer Flag indicating whether to write a closing bracer.
 	 * @return The output stream after writing the wireframe shape.
 	 */
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	/**
 	 * @brief Retrieves the color

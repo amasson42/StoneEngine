@@ -18,7 +18,7 @@ public:
 
 	~MeshNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] std::shared_ptr<IMeshInterface> getMesh() const;
 	void setMesh(std::shared_ptr<IMeshInterface> mesh);

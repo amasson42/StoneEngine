@@ -16,11 +16,11 @@ ImageData::~ImageData() {
 	}
 }
 
-std::ostream &ImageData::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	stream << "{size:" << _size << ",channels:" << _channels;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void ImageData::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["size"] = to_json(_size);
+	json["channels"] = Json::number(_channels);
 }
 
 const Size &ImageData::getSize() const {
