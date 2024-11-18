@@ -15,16 +15,13 @@ SkeletonNode::Bone::Bone(const std::shared_ptr<PivotNode> &pivot)
 SkeletonNode::SkeletonNode(const std::string &name) : Node(name), _bones() {
 }
 
-std::ostream &SkeletonNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Node::writeToStream(stream, false);
-	stream << ",bones:[";
+void SkeletonNode::writeToJson(Json::Object &json) const {
+	Node::writeToJson(json);
+
+	Json::Array &bones((json["bones"] = Json::array()).get<Json::Array>());
 	for (const auto &bone : _bones) {
-		stream << bone.pivot.lock()->getGlobalName() << ",";
+		bones.push_back(Json::string(bone.pivot.lock()->getGlobalName()));
 	}
-	stream << "]";
-	if (closing_bracer)
-		stream << "}";
-	return stream;
 }
 
 const std::vector<SkeletonNode::Bone> &SkeletonNode::getBones() const {

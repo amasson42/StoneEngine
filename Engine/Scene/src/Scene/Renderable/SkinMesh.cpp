@@ -3,17 +3,14 @@
 #include "Scene/Renderable/SkinMesh.hpp"
 
 #include "Scene/Node/SkeletonNode.hpp"
-#include "Scene/RendererObjectManager.hpp"
 
 namespace Stone::Scene {
 
-std::ostream &DynamicSkinMesh::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",vertices:" << _vertices.size();
-	stream << ",indices:" << _indices.size();
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void DynamicSkinMesh::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["vertices"] = Json::number(_vertices.size());
+	json["indices"] = Json::number(_indices.size());
 }
 
 const std::vector<WeightVertex> &DynamicSkinMesh::getVertices() const {
@@ -30,12 +27,10 @@ void DynamicSkinMesh::withElementsRef(
 	markDirty();
 }
 
-std::ostream &StaticSkinMesh::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",source_mesh:" << (_dynamicMesh ? std::to_string(_dynamicMesh->getId()) : "null");
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void StaticSkinMesh::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["source_mesh"] = _dynamicMesh ? Json::number(_dynamicMesh->getId()) : Json::null();
 }
 
 const std::shared_ptr<DynamicSkinMesh> &StaticSkinMesh::getSourceMesh() const {

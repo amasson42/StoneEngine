@@ -11,11 +11,11 @@ ImageSource::ImageSource(const std::shared_ptr<Assets::Bundle> &bundle, const st
 	: Assets::Resource(bundle, filepath), _channels(channels) {
 }
 
-std::ostream &ImageSource::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	stream << "{path:" << _filepath << ",channels:" << _channels;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void ImageSource::writeToJson(Json::Object &json) const {
+	Assets::Resource::writeToJson(json);
+
+	json["path"] = Json::string(_filepath);
+	json["channels"] = Json::number(static_cast<int>(_channels));
 }
 
 const std::string &ImageSource::getFilePath() const {

@@ -2,6 +2,8 @@
 
 #include "Scene/Node/CameraNode.hpp"
 
+#include "Utils/Glm.hpp"
+
 namespace Stone::Scene {
 
 STONE_ABSTRACT_NODE_IMPLEMENTATION(CameraNode)
@@ -9,13 +11,11 @@ STONE_ABSTRACT_NODE_IMPLEMENTATION(CameraNode)
 CameraNode::CameraNode(const std::string &name) : PivotNode(name), _near(0.1f), _far(100.0f) {
 }
 
-std::ostream &CameraNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	PivotNode::writeToStream(stream, false);
-	stream << ",near:" << _near;
-	stream << ",far:" << _far;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void CameraNode::writeToJson(Json::Object &json) const {
+	PivotNode::writeToJson(json);
+
+	json["near"] = Json::number(_near);
+	json["far"] = Json::number(_far);
 }
 
 float CameraNode::getNear() const {
@@ -44,13 +44,11 @@ PerspectiveCameraNode::PerspectiveCameraNode(const std::string &name)
 	: CameraNode(name), _fov(glm::radians(45.0f)), _aspect(1.0f) {
 }
 
-std::ostream &PerspectiveCameraNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	CameraNode::writeToStream(stream, false);
-	stream << ",fov:" << _fov;
-	stream << ",aspect:" << _aspect;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void PerspectiveCameraNode::writeToJson(Json::Object &json) const {
+	CameraNode::writeToJson(json);
+
+	json["fov"] = Json::number(_fov);
+	json["aspect"] = Json::number(_aspect);
 }
 
 glm::mat4 PerspectiveCameraNode::getProjectionMatrix() const {
@@ -78,12 +76,10 @@ STONE_NODE_IMPLEMENTATION(OrthographicCameraNode)
 OrthographicCameraNode::OrthographicCameraNode(const std::string &name) : CameraNode(name), _size(10.0f) {
 }
 
-std::ostream &OrthographicCameraNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	CameraNode::writeToStream(stream, false);
-	stream << ",size:" << _size;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void OrthographicCameraNode::writeToJson(Json::Object &json) const {
+	CameraNode::writeToJson(json);
+
+	json["size"] = to_json(_size);
 }
 
 glm::mat4 OrthographicCameraNode::getProjectionMatrix() const {

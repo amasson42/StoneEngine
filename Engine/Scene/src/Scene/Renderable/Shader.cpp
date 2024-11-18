@@ -2,7 +2,6 @@
 
 #include "Scene/Renderable/Shader.hpp"
 
-#include "Scene/RendererObjectManager.hpp"
 #include "Utils/StringExt.hpp"
 
 #include <iomanip>
@@ -26,25 +25,26 @@ Shader::Shader(ContentType contentType, std::string content)
 	: Object(), IRenderable(), _contentType(contentType), _content(std::move(content)) {
 }
 
-std::ostream &Shader::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",function:\"" << _function << '"';
+void Shader::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["function"] = Json::string(_function);
+
 	switch (_contentType) {
-	case ContentType::SourceCode: stream << ",source:\"" << _content << '"'; break;
-	case ContentType::SourceFile: stream << ",source_file:\"" << _content << '"'; break;
+	case ContentType::SourceCode: json["source_code"] = Json::string(_content); break;
+	case ContentType::SourceFile: json["source_file"] = Json::string(_content); break;
 	case ContentType::CompiledCode:
-		stream << ",compiled:\"";
-		for (char c : _content) {
-			stream << std::hex << std::setw(2) << std::setfill('0') << (int)(unsigned char)c;
+		{
+			// TODO: write in base64
+			std::stringstream hexastring;
+			for (char c : _content) {
+				hexastring << std::hex << std::setw(2) << std::setfill('0') << (int)(unsigned char)c;
+			}
+			json["compiled_code"] = Json::string(hexastring.str());
 		}
-		stream << '"';
 		break;
-	case ContentType::CompiledFile: stream << ",compiled_file:\"" << _content << '"'; break;
+	case ContentType::CompiledFile: json["compiled_file"] = Json::string(_content); break;
 	}
-	if (closing_bracer) {
-		stream << "}";
-	}
-	return stream;
 }
 
 std::pair<Shader::ContentType, const std::string &> Shader::getContent() const {
