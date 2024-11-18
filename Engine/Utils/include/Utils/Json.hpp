@@ -46,11 +46,12 @@ struct Value {
 		return std::get<T>(value);
 	}
 
-	static void parseString(const std::string &input, Value &out);
-	static void parseFile(const std::string &path, Value &out);
 	void serialize(std::ostream &stream) const;
 	std::string serialize() const;
 };
+
+void parseString(const std::string &input, Value &out);
+void parseFile(const std::string &path, Value &out);
 
 Value object(const Object &obj = {});
 Value array(const Array &arr = {});
@@ -76,6 +77,7 @@ enum class TokenType {
 };
 
 std::string to_string(TokenType type);
+std::ostream &operator<<(std::ostream &os, TokenType type);
 
 struct Token {
 	TokenType type;

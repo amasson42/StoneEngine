@@ -11,15 +11,6 @@
 
 namespace Stone::Json {
 
-void Value::parseString(const std::string &input, Value &out) {
-	Parser parser(input);
-	parser.parse(out);
-}
-
-void Value::parseFile(const std::string &path, Value &out) {
-	parseString(Utils::readTextFile(path), out);
-}
-
 void Value::serialize(std::ostream &stream) const {
 	Serializer serializer(stream);
 	return serializer.serialize(*this);
@@ -29,6 +20,15 @@ std::string Value::serialize() const {
 	std::stringstream ss;
 	serialize(ss);
 	return ss.str();
+}
+
+void parseString(const std::string &input, Value &out) {
+	Parser parser(input);
+	parser.parse(out);
+}
+
+void parseFile(const std::string &path, Value &out) {
+	parseString(Utils::readTextFile(path), out);
 }
 
 Value object(const Object &obj) {
@@ -72,6 +72,10 @@ std::string to_string(TokenType type) {
 	case TokenType::EndOfFile: return "EndOfFile";
 	default: return "Unknown";
 	}
+}
+
+std::ostream &operator<<(std::ostream &os, TokenType type) {
+	return os << to_string(type);
 }
 
 Lexer::Lexer(const std::string &input) : _input(input) {

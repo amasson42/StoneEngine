@@ -8,7 +8,7 @@ TEST(Json, ParseEmptyObject) {
 	std::string jsonString = "{}";
 
 	Json::Value json;
-	Json::Value::parseString(jsonString, json);
+	Json::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 	ASSERT_TRUE(json.get<Json::Object>().empty());
@@ -18,7 +18,7 @@ TEST(Json, ParseSimpleObject) {
 	std::string jsonString = R"({"name": "John", "age": 30, "isStudent": false})";
 
 	Json::Value json;
-	Json::Value::parseString(jsonString, json);
+	Json::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -37,7 +37,7 @@ TEST(Json, ParseArray) {
 	std::string jsonString = R"([1, "two", true, null])";
 
 	Json::Value json;
-	Json::Value::parseString(jsonString, json);
+	Json::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Array>());
 
@@ -60,7 +60,7 @@ TEST(Json, ParseNestedObject) {
 	std::string jsonString = R"({"person": {"name": "John", "age": 30}})";
 
 	Json::Value json;
-	Json::Value::parseString(jsonString, json);
+	Json::parseString(jsonString, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -81,7 +81,7 @@ TEST(Json, MalformedJsonThrowsException) {
 	EXPECT_THROW(
 		{
 			Json::Value json;
-			Json::Value::parseString(jsonString, json);
+			Json::parseString(jsonString, json);
 		},
 		std::runtime_error);
 }
@@ -92,7 +92,7 @@ TEST(Json, MalformedJsonThrowsException2) {
 	EXPECT_THROW(
 		{
 			Json::Value json;
-			Json::Value::parseString(jsonString, json);
+			Json::parseString(jsonString, json);
 		},
 		std::runtime_error);
 }
@@ -126,7 +126,7 @@ TEST(JsonSerializer, SerializeSimpleObject) {
 	}
 
 	Json::Value json;
-	Json::Value::parseString(result, json);
+	Json::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -153,7 +153,7 @@ TEST(JsonSerializer, SerializeArray) {
 	}
 
 	Json::Value json;
-	Json::Value::parseString(result, json);
+	Json::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Array>());
 
@@ -185,7 +185,7 @@ TEST(JsonSerializer, SerializeNestedObject) {
 	}
 
 	Json::Value json;
-	Json::Value::parseString(result, json);
+	Json::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -223,7 +223,7 @@ TEST(JsonSerializer, SerializeComplexObject) {
 	}
 
 	Json::Value json;
-	Json::Value::parseString(result, json);
+	Json::parseString(result, json);
 
 	ASSERT_TRUE(json.is<Json::Object>());
 
@@ -248,4 +248,64 @@ TEST(JsonSerializer, SerializeComplexObject) {
 	auto address = obj["address"].get<Json::Object>();
 	ASSERT_EQ(address["city"].get<std::string>(), "New York");
 	ASSERT_EQ(address["zip"].get<std::string>(), "10001");
+}
+
+TEST(JsonLexer, NextToken) {
+	std::string stream(R"(
+{
+    "name": "John",
+    "age": 30,
+    "isStudent": false,
+    "scores": [85,-20,12.5],
+    "address": {"city": "New York","zip": "10001"},
+}
+)");
+
+	Json::Lexer lexer(stream);
+
+#define CHECK_TOKEN(expected_type, expected_value)                                                                     \
+	{                                                                                                                  \
+		auto token = lexer.nextToken();                                                                                \
+		ASSERT_EQ(token.type, expected_type);                                                                          \
+		ASSERT_EQ(token.value, expected_value);                                                                        \
+	}
+
+	CHECK_TOKEN(Json::TokenType::LeftBrace, "{");
+	CHECK_TOKEN(Json::TokenType::String, "name");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::String, "John");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::String, "age");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::Number, "30");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::String, "isStudent");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::False, "false");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::String, "scores");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::LeftBracket, "[");
+	CHECK_TOKEN(Json::TokenType::Number, "85");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::Number, "-20");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::Number, "12.5");
+	CHECK_TOKEN(Json::TokenType::RightBracket, "]");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::String, "address");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::LeftBrace, "{");
+	CHECK_TOKEN(Json::TokenType::String, "city");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::String, "New York");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::String, "zip");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::String, "10001");
+	CHECK_TOKEN(Json::TokenType::RightBrace, "}");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::RightBrace, "}");
+	CHECK_TOKEN(Json::TokenType::EndOfFile, "");
+#undef CHECK_TOKEN
 }
