@@ -27,6 +27,5 @@ void Object::writeToJson(Json::Object &json) const {
 std::ostream &operator<<(std::ostream &os, const Stone::Core::Object &obj) {
 	Stone::Json::Value json = Stone::Json::object();
 	obj.writeToJson(json.get<Stone::Json::Object>());
-	// FIXME: use output to stream when implemented
-	return os << json.serialize();
+	return os << json;
 }

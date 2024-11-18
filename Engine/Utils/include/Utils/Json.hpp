@@ -3,7 +3,6 @@
 #pragma once
 
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <variant>
@@ -49,6 +48,7 @@ struct Value {
 
 	static void parseString(const std::string &input, Value &out);
 	static void parseFile(const std::string &path, Value &out);
+	void serialize(std::ostream &stream) const;
 	std::string serialize() const;
 };
 
@@ -117,7 +117,9 @@ private:
 class Serializer {
 
 public:
-	std::string serialize(const Value &value);
+	explicit Serializer(std::ostream &stream);
+
+	void serialize(const Value &value);
 
 	void operator()(const Object &obj);
 	void operator()(const Array &arr);
@@ -127,7 +129,9 @@ public:
 	void operator()(std::nullptr_t);
 
 private:
-	std::stringstream _ss;
+	std::ostream &_stream;
 };
+
+std::ostream &operator<<(std::ostream &os, const Value &val);
 
 } // namespace Stone::Json
