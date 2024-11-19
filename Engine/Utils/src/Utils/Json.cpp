@@ -6,6 +6,7 @@
 #include "Utils/StringExt.hpp"
 
 #include <cassert>
+#include <fstream>
 #include <sstream>
 
 
@@ -22,13 +23,22 @@ std::string Value::serialize() const {
 	return ss.str();
 }
 
-void parseString(const std::string &input, Value &out) {
+void parseStream(std::istream &input, Value &out) {
 	Parser parser(input);
 	parser.parse(out);
 }
 
+void parseString(const std::string &input, Value &out) {
+	std::istringstream stream(input);
+	parseStream(stream, out);
+}
+
 void parseFile(const std::string &path, Value &out) {
-	parseString(Utils::readTextFile(path), out);
+	std::ifstream file(path);
+	if (!file.is_open())
+		throw std::runtime_error("Failed to open file: " + path);
+	parseStream(file, out);
+	file.close();
 }
 
 Value object(const Object &obj) {
@@ -78,25 +88,26 @@ std::ostream &operator<<(std::ostream &os, TokenType type) {
 	return os << to_string(type);
 }
 
-Lexer::Lexer(const std::string &input) : _input(input) {
+Lexer::Lexer(std::istream &input) : _input(input) {
 }
 
 Token Lexer::nextToken() {
-	while (_pos < _input.size() && std::isspace(_input[_pos]))
-		_pos++;
 
-	if (_pos >= _input.size())
+	if (_currentChar == ' ') {
+		while (_input.get(_currentChar) && std::isspace(_currentChar))
+			;
+	}
+
+	if (_input.eof())
 		return {TokenType::EndOfFile, ""};
 
-	char current = _input[_pos];
-
-	switch (current) {
-	case '{': _pos++; return {TokenType::LeftBrace, "{"};
-	case '}': _pos++; return {TokenType::RightBrace, "}"};
-	case '[': _pos++; return {TokenType::LeftBracket, "["};
-	case ']': _pos++; return {TokenType::RightBracket, "]"};
-	case ':': _pos++; return {TokenType::Colon, ":"};
-	case ',': _pos++; return {TokenType::Comma, ","};
+	switch (_currentChar) {
+	case '{': _currentChar = ' '; return {TokenType::LeftBrace, "{"};
+	case '}': _currentChar = ' '; return {TokenType::RightBrace, "}"};
+	case '[': _currentChar = ' '; return {TokenType::LeftBracket, "["};
+	case ']': _currentChar = ' '; return {TokenType::RightBracket, "]"};
+	case ':': _currentChar = ' '; return {TokenType::Colon, ":"};
+	case ',': _currentChar = ' '; return {TokenType::Comma, ","};
 	case '"': return _stringToken();
 	default: return _otherTokens();
 	}
@@ -104,51 +115,57 @@ Token Lexer::nextToken() {
 
 Token Lexer::_stringToken() {
 	std::stringstream ss;
-	_pos++; // Skip the opening quote
-	while (_pos < _input.size() && _input[_pos] != '"') {
-		if (_input[_pos] == '\\')
-			_pos++; // Handle escape sequences
-		ss << _input[_pos++];
+	while (_input.get(_currentChar) && _currentChar != '"') {
+		if (_currentChar == '\\') {
+			if (!_input.get(_currentChar))
+				throw std::runtime_error("Unexpected end of input after \\");
+		}
+		ss << _currentChar;
 	}
-	_pos++; // Skip the closing quote
+	if (_currentChar != '"')
+		throw std::runtime_error("Unexpected end of input while parsing string");
+	_currentChar = ' ';
 	return {TokenType::String, ss.str()};
 }
 
 Token Lexer::_otherTokens() {
-	if (std::isdigit(_input[_pos]) || _input[_pos] == '-') {
+	auto expect = [&](std::string expected) {
+		for (char c : expected) {
+			if (!_input.get(_currentChar))
+				throw std::runtime_error("Unexpected end of input");
+			if (_currentChar != c)
+				throw std::runtime_error("Expected token in input");
+		}
+	};
+	if (std::isdigit(_currentChar) || _currentChar == '-') {
 		return _numberToken();
-	} else if (_input.substr(_pos, 4) == "true") {
-		_pos += 4;
+	} else if (_currentChar == 't') {
+		expect("rue");
+		_currentChar = ' ';
 		return {TokenType::True, "true"};
-	} else if (_input.substr(_pos, 5) == "false") {
-		_pos += 5;
+	} else if (_currentChar == 'f') {
+		expect("alse");
+		_currentChar = ' ';
 		return {TokenType::False, "false"};
-	} else if (_input.substr(_pos, 4) == "null") {
-		_pos += 4;
+	} else if (_currentChar == 'n') {
+		expect("ull");
+		_currentChar = ' ';
 		return {TokenType::Null, "null"};
 	} else {
-		throw std::runtime_error("Unexpected character in input");
+		throw std::runtime_error(std::string("Unexpected character ") + _currentChar + " in input");
 	}
 }
 
 Token Lexer::_numberToken() {
 	std::stringstream ss;
-	if (_input[_pos] == '-')
-		ss << _input[_pos++];
-	while (_pos < _input.size() && std::isdigit(_input[_pos])) {
-		ss << _input[_pos++];
-	}
-	if (_pos < _input.size() && _input[_pos] == '.') {
-		ss << _input[_pos++];
-		while (_pos < _input.size() && std::isdigit(_input[_pos])) {
-			ss << _input[_pos++];
-		}
-	}
+	do {
+		ss << _currentChar;
+	} while (_input.get(_currentChar) && (std::isdigit(_currentChar) || _currentChar == '.'));
 	return {TokenType::Number, ss.str()};
 }
 
 
-Parser::Parser(const std::string &input) : _lexer(input) {
+Parser::Parser(std::istream &input) : _lexer(input) {
 	_currentToken = _lexer.nextToken();
 }
 

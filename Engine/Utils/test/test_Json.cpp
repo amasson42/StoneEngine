@@ -251,13 +251,13 @@ TEST(JsonSerializer, SerializeComplexObject) {
 }
 
 TEST(JsonLexer, NextToken) {
-	std::string stream(R"(
+	std::stringstream stream(R"(
 {
     "name": "John",
     "age": 30,
     "isStudent": false,
     "scores": [85,-20,12.5],
-    "address": {"city": "New York","zip": "10001"},
+    "address": {"city": "The \"Island\"","zip": 10501},
 }
 )");
 
@@ -266,7 +266,7 @@ TEST(JsonLexer, NextToken) {
 #define CHECK_TOKEN(expected_type, expected_value)                                                                     \
 	{                                                                                                                  \
 		auto token = lexer.nextToken();                                                                                \
-		ASSERT_EQ(token.type, expected_type);                                                                          \
+		EXPECT_EQ(token.type, expected_type);                                                                          \
 		ASSERT_EQ(token.value, expected_value);                                                                        \
 	}
 
@@ -298,14 +298,48 @@ TEST(JsonLexer, NextToken) {
 	CHECK_TOKEN(Json::TokenType::LeftBrace, "{");
 	CHECK_TOKEN(Json::TokenType::String, "city");
 	CHECK_TOKEN(Json::TokenType::Colon, ":");
-	CHECK_TOKEN(Json::TokenType::String, "New York");
+	CHECK_TOKEN(Json::TokenType::String, "The \"Island\"");
 	CHECK_TOKEN(Json::TokenType::Comma, ",");
 	CHECK_TOKEN(Json::TokenType::String, "zip");
 	CHECK_TOKEN(Json::TokenType::Colon, ":");
-	CHECK_TOKEN(Json::TokenType::String, "10001");
+	CHECK_TOKEN(Json::TokenType::Number, "10501");
 	CHECK_TOKEN(Json::TokenType::RightBrace, "}");
 	CHECK_TOKEN(Json::TokenType::Comma, ",");
 	CHECK_TOKEN(Json::TokenType::RightBrace, "}");
 	CHECK_TOKEN(Json::TokenType::EndOfFile, "");
+#undef CHECK_TOKEN
+}
+
+TEST(JsonLexer, InterceptToken) {
+	std::stringstream stream(R"({"name": "John"}$[1,2,3])");
+
+	Json::Lexer lexer(stream);
+
+#define CHECK_TOKEN(expected_type, expected_value)                                                                     \
+	{                                                                                                                  \
+		auto token = lexer.nextToken();                                                                                \
+		EXPECT_EQ(token.type, expected_type);                                                                          \
+		ASSERT_EQ(token.value, expected_value);                                                                        \
+	}
+
+	CHECK_TOKEN(Json::TokenType::LeftBrace, "{");
+	CHECK_TOKEN(Json::TokenType::String, "name");
+	CHECK_TOKEN(Json::TokenType::Colon, ":");
+	CHECK_TOKEN(Json::TokenType::String, "John");
+	CHECK_TOKEN(Json::TokenType::RightBrace, "}");
+
+	char c;
+	stream.get(c);
+	ASSERT_EQ(c, '$');
+
+	CHECK_TOKEN(Json::TokenType::LeftBracket, "[");
+	CHECK_TOKEN(Json::TokenType::Number, "1");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::Number, "2");
+	CHECK_TOKEN(Json::TokenType::Comma, ",");
+	CHECK_TOKEN(Json::TokenType::Number, "3");
+	CHECK_TOKEN(Json::TokenType::RightBracket, "]");
+	CHECK_TOKEN(Json::TokenType::EndOfFile, "");
+
 #undef CHECK_TOKEN
 }

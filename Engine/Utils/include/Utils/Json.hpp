@@ -50,6 +50,7 @@ struct Value {
 	std::string serialize() const;
 };
 
+void parseStream(std::istream &input, Value &out);
 void parseString(const std::string &input, Value &out);
 void parseFile(const std::string &path, Value &out);
 
@@ -86,13 +87,13 @@ struct Token {
 
 class Lexer {
 public:
-	explicit Lexer(const std::string &input);
+	explicit Lexer(std::istream &input);
 
 	Token nextToken();
 
 private:
-	const std::string &_input;
-	std::size_t _pos = 0;
+	std::istream &_input;
+	char _currentChar = ' ';
 
 	Token _stringToken();
 	Token _otherTokens();
@@ -101,7 +102,7 @@ private:
 
 class Parser {
 public:
-	explicit Parser(const std::string &input);
+	explicit Parser(std::istream &input);
 
 	void parse(Value &out);
 
