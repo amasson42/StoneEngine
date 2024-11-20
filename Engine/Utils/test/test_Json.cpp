@@ -343,3 +343,54 @@ TEST(JsonLexer, InterceptToken) {
 
 #undef CHECK_TOKEN
 }
+
+TEST(JsonParser, ParseJsonFromStream) {
+	std::stringstream stream(R"({"name": "John"}24 0 1[1 2, 3] {"name": "Eric"})");
+
+	{
+		Json::Value json;
+		stream >> json;
+
+		EXPECT_TRUE(json.is<Json::Object>());
+
+		Json::Object &obj = json.get<Json::Object>();
+		EXPECT_TRUE(obj["name"].is<std::string>());
+		EXPECT_EQ(obj["name"].get<std::string>(), "John");
+	}
+
+	{
+		int twentyFour;
+		stream >> twentyFour;
+		EXPECT_EQ(twentyFour, 24);
+
+		bool b;
+		stream >> b;
+		EXPECT_EQ(b, false);
+		stream >> b;
+		EXPECT_EQ(b, true);
+	}
+
+	{
+		Json::Value json;
+		stream >> json;
+
+		EXPECT_TRUE(json.is<Json::Array>());
+
+		Json::Array &arr = json.get<Json::Array>();
+		ASSERT_EQ(arr.size(), 3);
+		ASSERT_EQ(arr[0].get<double>(), 1);
+		ASSERT_EQ(arr[1].get<double>(), 2);
+		ASSERT_EQ(arr[2].get<double>(), 3);
+	}
+
+	{
+		Json::Value json;
+		stream >> json;
+
+		EXPECT_TRUE(json.is<Json::Object>());
+
+		Json::Object obj = json.get<Json::Object>();
+		EXPECT_TRUE(obj["name"].is<std::string>());
+		EXPECT_EQ(obj["name"].get<std::string>(), "Eric");
+	}
+}

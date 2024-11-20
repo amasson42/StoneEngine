@@ -129,7 +129,7 @@ Token Lexer::_stringToken() {
 }
 
 Token Lexer::_otherTokens() {
-	auto expect = [&](std::string expected) {
+	auto expect = [&](const std::string &expected) {
 		for (char c : expected) {
 			if (!_input.get(_currentChar))
 				throw std::runtime_error("Unexpected end of input");
@@ -166,10 +166,10 @@ Token Lexer::_numberToken() {
 
 
 Parser::Parser(std::istream &input) : _lexer(input) {
-	_currentToken = _lexer.nextToken();
 }
 
 void Parser::parse(Value &out) {
+	_nextToken();
 	return _parseValue(out);
 }
 
@@ -177,48 +177,43 @@ void Parser::_parseValue(Value &out) {
 	switch (_currentToken.type) {
 	case TokenType::LeftBrace: return _parseObject(out);
 	case TokenType::LeftBracket: return _parseArray(out);
-	case TokenType::String:
-	case TokenType::Number:
-	case TokenType::True:
-	case TokenType::False:
-	case TokenType::Null: return _parsePrimitive(out);
-	default: throw std::runtime_error("Unexpected token in input");
+	default: return _parsePrimitive(out);
 	}
 }
 
 void Parser::_parseObject(Value &out) {
-	out.value = Object();
-	auto &object(std::get<Object>(out.value));
-	_consume(TokenType::LeftBrace);
+	auto &object((out = Json::object()).get<Object>());
+	_nextToken();
 	while (_currentToken.type != TokenType::RightBrace) {
-		const std::string key = _currentToken.value; // Store the key before consuming the tokens
-		_consume(TokenType::String);
-		_consume(TokenType::Colon);
-		Value value;
-		_parseValue(value);
-		object[key] = std::move(value);
+
+		_expect(TokenType::String);
+		const std::string key = _currentToken.value;
+
+		_nextToken();
+		_expect(TokenType::Colon);
+
+		_nextToken();
+		_parseValue(object[key]);
+
+		_nextToken();
 		if (_currentToken.type == TokenType::Comma) {
-			_consume(TokenType::Comma);
-		} else {
-			break;
+			_nextToken();
 		}
 	}
-	_consume(TokenType::RightBrace);
 }
 
 void Parser::_parseArray(Value &out) {
-	out.value = Array();
-	auto &array(std::get<Array>(out.value));
-	_consume(TokenType::LeftBracket);
+	auto &array((out = Json::array()).get<Array>());
+
+	_nextToken();
 	while (_currentToken.type != TokenType::RightBracket) {
 		_parseValue(array.emplace_back());
+
+		_nextToken();
 		if (_currentToken.type == TokenType::Comma) {
-			_consume(TokenType::Comma);
-		} else {
-			break;
+			_nextToken();
 		}
 	}
-	_consume(TokenType::RightBracket);
 }
 
 void Parser::_parsePrimitive(Value &out) {
@@ -230,14 +225,16 @@ void Parser::_parsePrimitive(Value &out) {
 	case TokenType::Null: out.value = std::nullptr_t(); break;
 	default: throw std::runtime_error("Unexpected token in input");
 	}
+}
+
+void Parser::_nextToken() {
 	_currentToken = _lexer.nextToken();
 }
 
-void Parser::_consume(TokenType expected) {
+void Parser::_expect(TokenType expected) const {
 	if (_currentToken.type != expected) {
 		throw std::runtime_error("Expected " + to_string(expected) + ", but got " + _currentToken.value);
 	}
-	_currentToken = _lexer.nextToken();
 }
 
 
@@ -292,6 +289,11 @@ void Serializer::operator()(std::nullptr_t) {
 std::ostream &operator<<(std::ostream &os, const Value &value) {
 	value.serialize(os);
 	return os;
+}
+
+std::istream &operator>>(std::istream &is, Value &value) {
+	parseStream(is, value);
+	return is;
 }
 
 } // namespace Stone::Json

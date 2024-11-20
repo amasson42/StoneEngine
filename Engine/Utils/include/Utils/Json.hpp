@@ -114,7 +114,9 @@ private:
 	void _parseObject(Value &out);
 	void _parseArray(Value &out);
 	void _parsePrimitive(Value &out);
-	void _consume(TokenType expected);
+
+	void _nextToken();
+	void _expect(TokenType expected) const;
 };
 
 class Serializer {
@@ -136,5 +138,6 @@ private:
 };
 
 std::ostream &operator<<(std::ostream &os, const Value &val);
+std::istream &operator>>(std::istream &is, Value &val);
 
 } // namespace Stone::Json
