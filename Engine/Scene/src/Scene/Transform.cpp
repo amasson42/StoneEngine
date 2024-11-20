@@ -216,11 +216,11 @@ void Transform3D::calculateTransformMatrix(glm::mat4 &m) const {
 
 
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform2D &transform) {
-	Stone::Json::Value json = transform.toJson();
+	Json::Value json = transform.toJson();
 	return stream << json;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform3D &transform) {
-	Stone::Json::Value json = transform.toJson();
+	Json::Value json = transform.toJson();
 	return stream << json;
 }

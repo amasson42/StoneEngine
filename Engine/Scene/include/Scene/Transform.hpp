@@ -9,7 +9,7 @@
 #include <glm/gtx/io.hpp>
 #include <iostream>
 
-namespace Stone::Json {
+namespace Json {
 struct Value;
 }
 

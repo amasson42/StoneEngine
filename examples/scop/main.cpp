@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 			auto asset = assetsBundle->loadResource<Stone::Scene::AssetResource>(argv[1]);
 			auto node = asset->getRootNode();
 			window->getWorld()->addChild(node);
-			std::cout << Stone::Json::object(asset->getMetadatas()).serialize() << std::endl;
+			std::cout << asset->getMetadatas() << std::endl;
 			node->writeHierarchy(std::cout);
 		}
 

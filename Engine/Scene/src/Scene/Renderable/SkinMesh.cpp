@@ -9,8 +9,8 @@ namespace Stone::Scene {
 void DynamicSkinMesh::writeToJson(Json::Object &json) const {
 	Object::writeToJson(json);
 
-	json["vertices"] = Json::number(_vertices.size());
-	json["indices"] = Json::number(_indices.size());
+	json["vertices"] = Json::number(static_cast<double>(_vertices.size()));
+	json["indices"] = Json::number(static_cast<double>(_indices.size()));
 }
 
 const std::vector<WeightVertex> &DynamicSkinMesh::getVertices() const {
