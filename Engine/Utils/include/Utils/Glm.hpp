@@ -9,9 +9,9 @@ float &value_at(mat3 &m, int r, int c);
 float &value_at(mat4 &m, int r, int c);
 } // namespace glm
 
-namespace Stone::Json {
+namespace Json {
 struct Value;
-} // namespace Stone::Json
+} // namespace Json
 
 namespace Stone {
 

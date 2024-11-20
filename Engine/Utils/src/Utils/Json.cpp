@@ -1,16 +1,11 @@
-// Copyright 2024 Stone-Engine
-
 #include "Utils/Json.hpp"
-
-#include "Utils/FileSystem.hpp"
-#include "Utils/StringExt.hpp"
 
 #include <cassert>
 #include <fstream>
 #include <sstream>
 
 
-namespace Stone::Json {
+namespace Json {
 
 void Value::serialize(std::ostream &stream) const {
 	Serializer serializer(stream);
@@ -270,8 +265,21 @@ void Serializer::operator()(const Array &array) {
 	_stream << "]";
 }
 
+static std::string _escape_string(const std::string &str) {
+	std::string result;
+	result.reserve(str.size());
+	for (char c : str) {
+		switch (c) {
+		case '"': result += "\\\""; break;
+		case '\\': result += "\\\\"; break;
+		default: result += c; break;
+		}
+	}
+	return result;
+}
+
 void Serializer::operator()(const std::string &str) {
-	_stream << "\"" << escape_string(str) << "\"";
+	_stream << "\"" << _escape_string(str) << "\"";
 }
 
 void Serializer::operator()(double num) {
@@ -296,4 +304,4 @@ std::istream &operator>>(std::istream &is, Value &value) {
 	return is;
 }
 
-} // namespace Stone::Json
+} // namespace Json

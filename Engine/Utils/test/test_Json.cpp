@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-using namespace Stone;
-
 TEST(Json, ParseEmptyObject) {
 	std::string jsonString = "{}";
 
@@ -248,6 +246,36 @@ TEST(JsonSerializer, SerializeComplexObject) {
 	auto address = obj["address"].get<Json::Object>();
 	ASSERT_EQ(address["city"].get<std::string>(), "New York");
 	ASSERT_EQ(address["zip"].get<std::string>(), "10001");
+}
+
+TEST(JsonSerializer, SerializeStringWithSpecialCharacters) {
+
+	std::string result;
+	{
+		Json::Object obj;
+		obj["name"] = "John \"Doe\"";
+		obj["city"] = "New\nYork";
+		obj["zip"] = "1000\b1";
+
+		auto value = Json::object(obj);
+
+		result = value.serialize();
+	}
+
+	Json::Value json;
+	Json::parseString(result, json);
+
+	ASSERT_TRUE(json.is<Json::Object>());
+
+	auto obj = json.get<Json::Object>();
+	ASSERT_TRUE(obj["name"].is<std::string>());
+	ASSERT_EQ(obj["name"].get<std::string>(), "John \"Doe\"");
+
+	ASSERT_TRUE(obj["city"].is<std::string>());
+	ASSERT_EQ(obj["city"].get<std::string>(), "New\nYork");
+
+	ASSERT_TRUE(obj["zip"].is<std::string>());
+	ASSERT_EQ(obj["zip"].get<std::string>(), "1000\b1");
 }
 
 TEST(JsonLexer, NextToken) {

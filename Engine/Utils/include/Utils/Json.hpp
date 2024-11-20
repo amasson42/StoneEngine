@@ -1,5 +1,3 @@
-// Copyright 2024 Stone-Engine
-
 #pragma once
 
 #include <iostream>
@@ -8,7 +6,7 @@
 #include <variant>
 #include <vector>
 
-namespace Stone::Json {
+namespace Json {
 
 struct Value;
 
@@ -140,4 +138,4 @@ private:
 std::ostream &operator<<(std::ostream &os, const Value &val);
 std::istream &operator>>(std::istream &is, Value &val);
 
-} // namespace Stone::Json
+} // namespace Json

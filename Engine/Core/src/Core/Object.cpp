@@ -25,7 +25,7 @@ void Object::writeToJson(Json::Object &json) const {
 } // namespace Stone::Core
 
 std::ostream &operator<<(std::ostream &os, const Stone::Core::Object &obj) {
-	Stone::Json::Value json = Stone::Json::object();
-	obj.writeToJson(json.get<Stone::Json::Object>());
+	Json::Value json = Json::object();
+	obj.writeToJson(json.get<Json::Object>());
 	return os << json;
 }

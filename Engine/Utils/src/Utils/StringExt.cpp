@@ -35,29 +35,6 @@ std::string int_to_hex(unsigned char c, int width) {
 	return ss.str();
 }
 
-std::string escape_string(const std::string &str) {
-	std::string result;
-	for (char c : str) {
-		switch (c) {
-		case '\"': result += "\\\""; break;
-		case '\\': result += "\\\\"; break;
-		case '\b': result += "\\b"; break;
-		case '\f': result += "\\f"; break;
-		case '\n': result += "\\n"; break;
-		case '\r': result += "\\r"; break;
-		case '\t': result += "\\t"; break;
-		default:
-			if ('\x00' <= c && c <= '\x1f') {
-				result += "\\u" + int_to_hex(static_cast<unsigned char>(c));
-			} else {
-				result += c;
-			}
-			break;
-		}
-	}
-	return result;
-}
-
 const static std::string base64_chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 void bytes_to_base64(const u_int8_t *bytes, std::size_t size, std::string &out) {

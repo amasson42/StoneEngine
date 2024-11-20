@@ -45,14 +45,6 @@ TEST(StringExt, IntToHex) {
 	EXPECT_EQ(int_to_hex(255), "FF");
 }
 
-TEST(StringExt, EscapeString) {
-	std::string input = R"(This
-is a\test "string")";
-	std::string expected = R"(This\nis a\\test \"string\")";
-
-	EXPECT_EQ(escape_string(input), expected);
-}
-
 TEST(StringExt, BytesToBase64String) {
 	auto test = [](std::string input, std::string expected) {
 		std::string output;
