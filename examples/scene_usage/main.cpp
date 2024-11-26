@@ -8,7 +8,7 @@ using namespace Stone::Scene;
 
 void testNode() {
 	// Create a root node
-	std::shared_ptr<WorldNode> world = std::make_shared<WorldNode>();
+	std::shared_ptr<WorldNode> world = WorldNode::create();
 	world->getMetadatas()["description"] = Json::string("The root node of the scene graph.");
 	world->getMetadatas()["is_root"] = Json::boolean(true);
 	world->getMetadatas()["version"] = Json::number(1.0);
@@ -82,7 +82,7 @@ std::shared_ptr<T> makeNode(const std::string &type, Args... args) {
 }
 
 void testNodeDynamic() {
-	auto world = makeNode<WorldNode>("WorldNode", "world");
+	auto world = WorldNode::create();
 	auto child1 = makeNode<PivotNode>("PivotNode", "child1");
 	world->addChild(child1);
 	auto child2 = makeNode<MeshNode>("MeshNode", "child2");
