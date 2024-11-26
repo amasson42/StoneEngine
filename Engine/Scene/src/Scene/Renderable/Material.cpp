@@ -8,21 +8,20 @@
 
 namespace Stone::Scene {
 
-std::ostream &Material::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",textures:{";
+void Material::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	auto &textures((json["textures"] = Json::object()).get<Json::Object>());
 	for (auto &it : _textures)
-		stream << it.first << ":" << (it.second ? std::to_string(it.second->getId()) : "null") << ",";
-	stream << "},vectors:{";
+		textures[it.first] = it.second ? Json::number(it.second->getId()) : Json::null();
+
+	auto &vectors((json["vectors"] = Json::object()).get<Json::Object>());
 	for (auto &it : _vectors)
-		stream << it.first << ":" << it.second << ",";
-	stream << "},scalars:{";
+		vectors[it.first] = to_json(it.second);
+
+	auto &scalars((json["scalars"] = Json::object()).get<Json::Object>());
 	for (auto &it : _scalars)
-		stream << it.first << ":" << it.second << ",";
-	stream << "}";
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+		scalars[it.first] = Json::number(it.second);
 }
 
 void Material::setTextureParameter(const std::string &name, std::shared_ptr<Texture> texture) {

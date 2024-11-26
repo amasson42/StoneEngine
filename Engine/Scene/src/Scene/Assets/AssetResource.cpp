@@ -15,29 +15,25 @@ AssetResource::AssetResource(const std::shared_ptr<Core::Assets::Bundle> &bundle
 	loadData();
 };
 
-std::ostream &AssetResource::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Core::Assets::Resource::writeToStream(stream, false);
-	stream << ",meshes:[";
+void AssetResource::writeToJson(Json::Object &json) const {
+	Core::Assets::Resource::writeToJson(json);
+
+	auto &meshes((json["meshes"] = Json::array()).get<Json::Array>());
 	for (const auto &mesh : _meshes) {
-		stream << mesh->getId() << ",";
+		meshes.push_back(Json::number(mesh->getId()));
 	}
-	stream << "],textures:[";
+
+	auto &textures((json["textures"] = Json::array()).get<Json::Array>());
 	for (const auto &texture : _textures) {
-		stream << texture->getId() << ",";
+		textures.push_back(Json::number(texture->getId()));
 	}
-	stream << "],materials:[";
+
+	auto &materials((json["materials"] = Json::array()).get<Json::Array>());
 	for (const auto &material : _materials) {
-		stream << material->getId() << ",";
+		materials.push_back(Json::number(material->getId()));
 	}
-	stream << "],rootNode:";
-	if (_rootNode) {
-		stream << _rootNode->getId();
-	} else {
-		stream << "null";
-	}
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+
+	json["root_node"] = _rootNode ? Json::number(_rootNode->getId()) : Json::null();
 }
 
 const std::vector<std::shared_ptr<IMeshObject>> &AssetResource::getMeshes() const {

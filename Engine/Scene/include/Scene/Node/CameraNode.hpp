@@ -23,7 +23,7 @@ public:
 
 	~CameraNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] virtual glm::mat4 getProjectionMatrix() const = 0;
 
@@ -49,7 +49,7 @@ public:
 
 	~PerspectiveCameraNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] glm::mat4 getProjectionMatrix() const override;
 
@@ -73,7 +73,7 @@ public:
 
 	~OrthographicCameraNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] glm::mat4 getProjectionMatrix() const override;
 

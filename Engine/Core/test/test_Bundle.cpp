@@ -14,10 +14,6 @@ public:
 	const char *getClassName() const override {
 		return "MockResource";
 	}
-
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override {
-		return Assets::Resource::writeToStream(stream, closing_bracer);
-	}
 };
 
 TEST(Bundle, RootDirectory) {

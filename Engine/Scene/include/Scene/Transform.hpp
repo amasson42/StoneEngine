@@ -9,6 +9,10 @@
 #include <glm/gtx/io.hpp>
 #include <iostream>
 
+namespace Json {
+struct Value;
+}
+
 namespace Stone::Scene {
 
 /**
@@ -88,11 +92,10 @@ struct Transform2D {
 	[[nodiscard]] glm::mat3 getTransformMatrix() const;
 
 	/**
-	 * @brief Write the transform data to an output stream.
-	 * @param stream The output stream.
-	 * @return The output stream.
+	 * @brief Convert into json
+	 * @return The Json value
 	 */
-	std::ostream &write(std::ostream &stream) const;
+	Json::Value toJson() const;
 
 protected:
 	glm::vec2 _position; /**< The position of the transform. */
@@ -211,11 +214,10 @@ struct Transform3D {
 	[[nodiscard]] glm::mat4 getTransformMatrix() const;
 
 	/**
-	 * @brief Write the transform data to an output stream.
-	 * @param stream The output stream.
-	 * @return The output stream.
+	 * @brief Convert into json
+	 * @return The Json value
 	 */
-	std::ostream &write(std::ostream &stream) const;
+	Json::Value toJson() const;
 
 protected:
 	glm::vec3 _position; /**< The position of the transform. */

@@ -25,7 +25,7 @@ public:
 
 	~WorldNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	void setRenderer(const std::shared_ptr<ISceneRenderer> &renderer);
 	[[nodiscard]] std::shared_ptr<ISceneRenderer> getRenderer() const;

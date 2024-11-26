@@ -1,15 +1,12 @@
-// Copyright 2024 Stone-Engine
-
 #pragma once
 
-#include <memory>
-#include <sstream>
+#include <iostream>
 #include <string>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
-namespace Stone::Json {
+namespace Json {
 
 struct Value;
 
@@ -47,10 +44,13 @@ struct Value {
 		return std::get<T>(value);
 	}
 
-	static void parseString(const std::string &input, Value &out);
-	static void parseFile(const std::string &path, Value &out);
+	void serialize(std::ostream &stream) const;
 	std::string serialize() const;
 };
+
+void parseStream(std::istream &input, Value &out);
+void parseString(const std::string &input, Value &out);
+void parseFile(const std::string &path, Value &out);
 
 Value object(const Object &obj = {});
 Value array(const Array &arr = {});
@@ -76,6 +76,7 @@ enum class TokenType {
 };
 
 std::string to_string(TokenType type);
+std::ostream &operator<<(std::ostream &os, TokenType type);
 
 struct Token {
 	TokenType type;
@@ -84,13 +85,13 @@ struct Token {
 
 class Lexer {
 public:
-	explicit Lexer(const std::string &input);
+	explicit Lexer(std::istream &input);
 
 	Token nextToken();
 
 private:
-	const std::string &_input;
-	std::size_t _pos = 0;
+	std::istream &_input;
+	char _currentChar = ' ';
 
 	Token _stringToken();
 	Token _otherTokens();
@@ -99,7 +100,7 @@ private:
 
 class Parser {
 public:
-	explicit Parser(const std::string &input);
+	explicit Parser(std::istream &input);
 
 	void parse(Value &out);
 
@@ -111,13 +112,17 @@ private:
 	void _parseObject(Value &out);
 	void _parseArray(Value &out);
 	void _parsePrimitive(Value &out);
-	void _consume(TokenType expected);
+
+	void _nextToken();
+	void _expect(TokenType expected) const;
 };
 
 class Serializer {
 
 public:
-	std::string serialize(const Value &value);
+	explicit Serializer(std::ostream &stream);
+
+	void serialize(const Value &value);
 
 	void operator()(const Object &obj);
 	void operator()(const Array &arr);
@@ -127,7 +132,10 @@ public:
 	void operator()(std::nullptr_t);
 
 private:
-	std::stringstream _ss;
+	std::ostream &_stream;
 };
 
-} // namespace Stone::Json
+std::ostream &operator<<(std::ostream &os, const Value &val);
+std::istream &operator>>(std::istream &is, Value &val);
+
+} // namespace Json

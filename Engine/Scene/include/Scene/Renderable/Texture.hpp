@@ -43,7 +43,7 @@ public:
 	 * @param closing_bracer Flag indicating whether to write a closing brace after the object.
 	 * @return The output stream after writing the Texture object.
 	 */
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	/**
 	 * @brief Set the image associated with the Texture.

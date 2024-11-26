@@ -15,7 +15,7 @@ public:
 
 	~LightNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] virtual bool isCastingShadow() const;
 
@@ -41,7 +41,7 @@ public:
 
 	~AmbientLightNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 };
 
 class PointLightNode : public LightNode {
@@ -59,7 +59,7 @@ public:
 	[[nodiscard]] const glm::vec3 &getSpecular() const;
 	void setSpecular(const glm::vec3 &specular);
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 protected:
 	glm::vec3 _attenuation;
@@ -75,7 +75,7 @@ public:
 
 	~CastingLightNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] bool isCastingShadow() const override;
 	void setCastingShadow(bool castShadow);
@@ -112,7 +112,7 @@ public:
 
 	~DirectionalLightNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] bool isInfinite() const;
 	void setInfinite(bool infinite);
@@ -136,7 +136,7 @@ public:
 
 	~SpotLightNode() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	[[nodiscard]] float getConeAngle() const;
 	void setConeAngle(float coneAngle);

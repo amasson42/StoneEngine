@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include <iostream>
+#include "Utils/Json.hpp"
+
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace Stone::Core {
 
@@ -32,7 +31,7 @@ public:
 		return reinterpret_cast<std::intptr_t>(getClassName());
 	}
 
-	virtual std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const;
+	virtual void writeToJson(Json::Object &json) const;
 
 protected:
 	uint32_t _id;

@@ -14,13 +14,10 @@ Bundle::Bundle(std::string rootDirectory) : _rootDirectory(std::move(rootDirecto
 	}
 }
 
-std::ostream &Bundle::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",root_directory:\"" << _rootDirectory << "\"";
-	if (closing_bracer) {
-		stream << "}";
-	}
-	return stream;
+void Bundle::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["root_directory"] = Json::string(_rootDirectory);
 }
 
 std::shared_ptr<Resource> Bundle::getResource(const std::string &filepath) const {

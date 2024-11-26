@@ -13,13 +13,11 @@ STONE_NODE_IMPLEMENTATION(MeshNode)
 MeshNode::MeshNode(const std::string &name) : RenderableNode(name), _mesh(nullptr), _material(nullptr) {
 }
 
-std::ostream &MeshNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	RenderableNode::writeToStream(stream, false);
-	stream << ",mesh:" << (_mesh ? std::to_string(_mesh->getId()) : "null");
-	stream << ",material:" << (_material ? std::to_string(_material->getId()) : "null");
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void MeshNode::writeToJson(Json::Object &json) const {
+	RenderableNode::writeToJson(json);
+
+	json["mesh"] = _mesh ? Json::number(_mesh->getId()) : Json::null();
+	json["material"] = _material ? Json::number(_material->getId()) : Json::null();
 }
 
 std::shared_ptr<IMeshInterface> MeshNode::getMesh() const {
