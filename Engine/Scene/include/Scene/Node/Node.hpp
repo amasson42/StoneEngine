@@ -8,7 +8,7 @@
 #include "Scene/RenderContext.hpp"
 
 #include <functional>
-#include <vector>
+#include <list>
 
 namespace Stone::Scene {
 
@@ -138,7 +138,7 @@ public:
 	/**
 	 * @brief Gets the children nodes of this node.
 	 */
-	const std::vector<std::shared_ptr<Node>> &getChildren() const;
+	const std::list<std::shared_ptr<Node>> &getChildren() const;
 
 	/**
 	 * @brief Gets the child node with the given name.
@@ -295,10 +295,10 @@ public:
 	Json::Object &getMetadatas();
 
 protected:
-	std::string _name;							  /**< The name of the node. */
-	std::vector<std::shared_ptr<Node>> _children; /**< The children nodes of this node. */
-	std::weak_ptr<Node> _parent;				  /**< The parent node of this node. */
-	std::weak_ptr<WorldNode> _world;			  /**< The world node that this node belongs to. */
+	std::string _name;							/**< The name of the node. */
+	std::list<std::shared_ptr<Node>> _children; /**< The children nodes of this node. */
+	std::weak_ptr<Node> _parent;				/**< The parent node of this node. */
+	std::weak_ptr<WorldNode> _world;			/**< The world node that this node belongs to. */
 
 	Json::Object _metadatas; /**< Metadata of the node */
 
