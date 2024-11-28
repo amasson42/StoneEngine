@@ -19,10 +19,10 @@ static time_t getLastmodifiedTimeOfFile(const char *filename) {
 		throw std::runtime_error("File does not exist");
 }
 
-Stone::Scene::ShaderParameters parseShaderParameters(const Stone::Json::Value &json) {
+Stone::Scene::ShaderParameters parseShaderParameters(const Json::Value &json) {
 	Stone::Scene::ShaderParameters params;
 
-	auto &params_obj = json.get<Stone::Json::Object>();
+	auto &params_obj = json.get<Json::Object>();
 
 	for (auto [key, value] : params_obj) {
 		Stone::Scene::ShaderParameters::Type type;
@@ -56,8 +56,8 @@ std::string to_string(Stone::Scene::ShaderParameters::Type type) {
 
 void generateShaderOutput(const char *input_file, const char *output_file) {
 
-	Stone::Json::Value input_json;
-	Stone::Json::Value::parseFile(input_file, input_json);
+	Json::Value input_json;
+	Json::parseFile(input_file, input_json);
 
 	std::ofstream output_stream(output_file, std::ios::out | std::ios::trunc);
 
@@ -83,9 +83,15 @@ void generateShader() {
 	}
 }
 
+void printUsage() {
+	std::cout << "Usage: glsl_generator <input> <output> [-f]" << std::endl;
+}
+
 int main(int argc, const char *argv[]) {
-	if (argc < 3)
+	if (argc < 3) {
+		printUsage();
 		return 1;
+	}
 
 	input = argv[1];
 	output = argv[2];

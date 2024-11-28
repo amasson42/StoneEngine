@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <list>
 
 namespace Stone::Scene {
 
