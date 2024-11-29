@@ -25,8 +25,8 @@ static void initializeOpenGL() {
 	initialized = true;
 }
 
-OpenGLRenderer::OpenGLRenderer(RendererSettings &settings) : Renderer(), _frameSize(), _resources(nullptr) {
-	updateFrameSize(settings.frame_size);
+OpenGLRenderer::OpenGLRenderer(RendererSettings &settings)
+	: Renderer(), _frameSize(settings.frame_size), _resources(nullptr) {
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -56,7 +56,13 @@ void OpenGLRenderer::renderWorld(const std::shared_ptr<Scene::WorldNode> &world)
 	context.gBuffer = _gBuffer.get();
 
 	world->initializeRenderContext(context);
+
+	_gBuffer->bind();
 	world->render(context);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	_gBuffer->render();
 }
 
 void OpenGLRenderer::updateFrameSize(std::pair<uint32_t, uint32_t> size) {
@@ -68,6 +74,7 @@ void OpenGLRenderer::updateFrameSize(std::pair<uint32_t, uint32_t> size) {
 
 void OpenGLRenderer::initialize() {
 	initializeOpenGL();
+	updateFrameSize(_frameSize);
 	std::cout << "OpenGLRenderer created" << std::endl;
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 	_resources = std::make_shared<OpenGLResources>(std::static_pointer_cast<OpenGLRenderer>(shared_from_this()));

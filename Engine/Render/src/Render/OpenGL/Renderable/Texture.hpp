@@ -48,6 +48,19 @@ public:
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	Texture(GLsizei width, GLsizei height, GLint internalFormat, GLenum format, GLenum type, GLint wrap, GLint filter) {
+		glGenTextures(1, &_gl_texture);
+		if (_gl_texture == 0) {
+			std::runtime_error("Failed to create texture buffer.");
+		}
+		glBindTexture(GL_TEXTURE_2D, _gl_texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+	}
+
 	~Texture() override {
 		if (_gl_texture != 0) {
 			glDeleteTextures(1, &_gl_texture);

@@ -96,7 +96,7 @@ void main()
     vs_out.wtangent = u_mat_normal * tangent;
     vs_out.wbitangent = u_mat_normal * bitangent;
     vs_out.uv = uv;
-};
+}
 
 )shader";
 
