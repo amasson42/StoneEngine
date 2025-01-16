@@ -5,7 +5,6 @@
 #include "Scene/Node/SkeletonNode.hpp"
 #include "Scene/Renderable/Material.hpp"
 #include "Scene/Renderable/SkinMesh.hpp"
-#include "Scene/RendererObjectManager.hpp"
 
 namespace Stone::Scene {
 
@@ -14,14 +13,12 @@ STONE_NODE_IMPLEMENTATION(SkinMeshNode)
 SkinMeshNode::SkinMeshNode(const std::string &name) : RenderableNode(name), _mesh(), _material(), _skeleton() {
 }
 
-std::ostream &SkinMeshNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	RenderableNode::writeToStream(stream, false);
-	stream << ",mesh:" << (_mesh == nullptr ? "null" : std::to_string(_mesh->getId()));
-	stream << ",material:" << (_material == nullptr ? "null" : std::to_string(_material->getId()));
-	stream << ",skeleton:" << (_skeleton.expired() ? "null" : _skeleton.lock()->getGlobalName());
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void SkinMeshNode::writeToJson(Json::Object &json) const {
+	RenderableNode::writeToJson(json);
+
+	json["mesh"] = _mesh ? Json::number(_mesh->getId()) : Json::null();
+	json["material"] = _material ? Json::number(_material->getId()) : Json::null();
+	json["skeleton"] = !_skeleton.expired() ? Json::string(_skeleton.lock()->getGlobalName()) : Json::null();
 }
 
 std::shared_ptr<ISkinMeshInterface> SkinMeshNode::getSkinMesh() const {

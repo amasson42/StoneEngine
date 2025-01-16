@@ -23,7 +23,7 @@ class Material : public Scene::IRendererObject {
 public:
 	Material(const std::shared_ptr<Scene::Material> &material, const std::shared_ptr<VulkanRenderer> &renderer);
 
-	~Material() override;
+	~Material() override = default;
 
 	void render(Scene::RenderContext &context) override;
 };

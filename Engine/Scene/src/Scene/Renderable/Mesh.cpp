@@ -2,17 +2,13 @@
 
 #include "Scene/Renderable/Mesh.hpp"
 
-#include "Scene/RendererObjectManager.hpp"
-
 namespace Stone::Scene {
 
-std::ostream &DynamicMesh::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",vertices:" << _vertices.size();
-	stream << ",indices:" << _indices.size();
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void DynamicMesh::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["vertices"] = Json::number(static_cast<double>(_vertices.size()));
+	json["indices"] = Json::number(static_cast<double>(_indices.size()));
 }
 
 const std::vector<Vertex> &DynamicMesh::getVertices() const {
@@ -28,12 +24,10 @@ void DynamicMesh::withElementsRef(const std::function<void(std::vector<Vertex> &
 	markDirty();
 }
 
-std::ostream &StaticMesh::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",dynamic_mesh:" << _dynamicMesh ? std::to_string(_dynamicMesh->getId()) : "null";
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void StaticMesh::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["dynamic_mesh"] = _dynamicMesh ? Json::number(_dynamicMesh->getId()) : Json::null();
 }
 
 const std::shared_ptr<DynamicMesh> &StaticMesh::getSourceMesh() const {

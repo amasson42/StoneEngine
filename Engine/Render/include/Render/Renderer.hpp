@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Scene/ISceneRenderer.hpp"
+#include "Scene/Renderer/ISceneRenderer.hpp"
 
 #include <memory>
 

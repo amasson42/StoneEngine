@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Scene/RenderContext.hpp"
+#include "Scene/Renderer/RenderContext.hpp"
 #include "Scene/Transform.hpp"
 #include "Scene/Vertex.hpp"
 
@@ -27,7 +27,8 @@ class WorldNode;
 /** Renderable */
 class Texture;
 class Material;
-class Shader;
+class AShader;
+class FragmentShader;
 
 class IMeshObject;
 class IMeshInterface;
@@ -37,5 +38,6 @@ class Skeleton;
 class ISkinMeshInterface;
 class DynamicSkinMesh;
 class StaticSkinMesh;
+class WireframeShape;
 
 } // namespace Stone::Scene

@@ -7,7 +7,7 @@
 #include <vulkan/vulkan.h>
 
 namespace Stone::Scene {
-class Shader;
+class FragmentShader;
 } // namespace Stone::Scene
 
 namespace Stone::Render::Vulkan {
@@ -16,8 +16,8 @@ class VulkanRenderer;
 
 class Shader : public Scene::IRendererObject {
 public:
-	Shader(const std::shared_ptr<Scene::Shader> &shader, const std::shared_ptr<VulkanRenderer> &renderer);
-	~Shader() override;
+	Shader(const std::shared_ptr<Scene::FragmentShader> &shader, const std::shared_ptr<VulkanRenderer> &renderer);
+	~Shader() override = default;
 
 	void render(Scene::RenderContext &context) override;
 };

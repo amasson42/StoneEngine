@@ -1,6 +1,6 @@
 // Copyright 2024 Stone-Engine
 
-#include "Scene/RendererObjectManager.hpp"
+#include "Scene/Renderer/RendererObjectManager.hpp"
 
 #include "Scene.hpp"
 
@@ -19,7 +19,8 @@ const std::unordered_map<std::intptr_t, CastFunction> updateCastedFunctions = {
 	CASTED_FUNCTION_MAP_ENTRY(SkinMeshNode),	CASTED_FUNCTION_MAP_ENTRY(Material),
 	CASTED_FUNCTION_MAP_ENTRY(DynamicMesh),		CASTED_FUNCTION_MAP_ENTRY(StaticMesh),
 	CASTED_FUNCTION_MAP_ENTRY(DynamicSkinMesh), CASTED_FUNCTION_MAP_ENTRY(StaticSkinMesh),
-	CASTED_FUNCTION_MAP_ENTRY(Texture),			CASTED_FUNCTION_MAP_ENTRY(Shader),
+	CASTED_FUNCTION_MAP_ENTRY(WireframeShape),	CASTED_FUNCTION_MAP_ENTRY(Texture),
+	CASTED_FUNCTION_MAP_ENTRY(FragmentShader),
 };
 
 void RendererObjectManager::updateRenderable(const std::shared_ptr<Core::Object> &renderable) {
@@ -34,7 +35,6 @@ void RendererObjectManager::updateMeshNode(const std::shared_ptr<MeshNode> &mesh
 		updateMaterial(meshNode->getMaterial());
 	if (meshNode->getMesh() && meshNode->getMesh()->isDirty())
 		updateRenderable(meshNode->getMesh());
-	meshNode->markUndirty();
 }
 
 void RendererObjectManager::updateInstancedMeshNode(const std::shared_ptr<InstancedMeshNode> &instancedMeshNode) {
@@ -42,7 +42,6 @@ void RendererObjectManager::updateInstancedMeshNode(const std::shared_ptr<Instan
 		updateMaterial(instancedMeshNode->getMaterial());
 	if (instancedMeshNode->getMesh() && instancedMeshNode->getMesh()->isDirty())
 		updateRenderable(instancedMeshNode->getMesh());
-	instancedMeshNode->markUndirty();
 }
 
 void RendererObjectManager::updateSkinMeshNode(const std::shared_ptr<SkinMeshNode> &skinMeshNode) {
@@ -50,56 +49,53 @@ void RendererObjectManager::updateSkinMeshNode(const std::shared_ptr<SkinMeshNod
 		updateMaterial(skinMeshNode->getMaterial());
 	if (skinMeshNode->getSkinMesh() && skinMeshNode->getSkinMesh()->isDirty())
 		updateRenderable(skinMeshNode->getSkinMesh());
-	skinMeshNode->markUndirty();
 }
 
 void RendererObjectManager::updateMaterial(const std::shared_ptr<Material> &material) {
-	auto vertexShader = material->getVertexShader();
-	if (vertexShader && vertexShader->isDirty()) {
-		updateShader(vertexShader);
-	}
 	auto fragmentShader = material->getFragmentShader();
 	if (fragmentShader && fragmentShader->isDirty()) {
-		updateShader(fragmentShader);
+		updateFragmentShader(fragmentShader);
 	}
-	material->forEachTextures([this](std::pair<const std::string, std::shared_ptr<Texture>> &it) {
-		if (it.second->isDirty())
-			updateTexture(it.second);
+	material->forEachTextures([this](const Material::Location &loc, const std::shared_ptr<Texture> &texture) {
+		(void)loc;
+		if (texture->isDirty())
+			updateTexture(texture);
 	});
-	material->markUndirty();
 }
 
 void RendererObjectManager::updateDynamicMesh(const std::shared_ptr<DynamicMesh> &mesh) {
-	mesh->markUndirty();
+	if (mesh->getDefaultMaterial() && mesh->getDefaultMaterial()->isDirty())
+		updateMaterial(mesh->getDefaultMaterial());
 }
 
 void RendererObjectManager::updateStaticMesh(const std::shared_ptr<StaticMesh> &mesh) {
-	mesh->markUndirty();
+	if (mesh->getDefaultMaterial() && mesh->getDefaultMaterial()->isDirty())
+		updateMaterial(mesh->getDefaultMaterial());
 }
 
 void RendererObjectManager::updateDynamicSkinMesh(const std::shared_ptr<DynamicSkinMesh> &skinmesh) {
-	skinmesh->markUndirty();
+	if (skinmesh->getDefaultMaterial() && skinmesh->getDefaultMaterial()->isDirty())
+		updateMaterial(skinmesh->getDefaultMaterial());
 }
 
 void RendererObjectManager::updateStaticSkinMesh(const std::shared_ptr<StaticSkinMesh> &skinmesh) {
-	skinmesh->markUndirty();
+	if (skinmesh->getDefaultMaterial() && skinmesh->getDefaultMaterial()->isDirty())
+		updateMaterial(skinmesh->getDefaultMaterial());
+}
+
+void RendererObjectManager::updateWireframeShape(const std::shared_ptr<WireframeShape> &shape) {
 }
 
 void RendererObjectManager::updateTexture(const std::shared_ptr<Texture> &texture) {
-	texture->markUndirty();
 }
 
-void RendererObjectManager::updateShader(const std::shared_ptr<Shader> &shader) {
-	shader->markUndirty();
+void RendererObjectManager::updateFragmentShader(const std::shared_ptr<FragmentShader> &shader) {
 }
 
-void RendererObjectManager::setRendererObjectTo(IRenderable *element,
-												const std::shared_ptr<IRendererObject> &rendererObject) {
-	element->setRendererObject(rendererObject);
-}
-
-void RendererObjectManager::markElementUndirty(IRenderable *element) {
-	element->markUndirty();
+void RendererObjectManager::updateRendererObject(IRenderable &element,
+												 const std::shared_ptr<IRendererObject> &rendererObject) {
+	element.setRendererObject(rendererObject);
+	element.markUndirty();
 }
 
 } // namespace Stone::Scene

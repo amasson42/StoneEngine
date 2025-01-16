@@ -2,6 +2,8 @@
 
 #include "Scene/Node/Node.hpp"
 
+#include "Scene/Node/WorldNode.hpp"
+
 #include <algorithm>
 #include <cassert>
 
@@ -14,13 +16,12 @@ Node::Node(const std::string &name) : Object(), _name(name), _children(), _paren
 	assert(name.find('/') == std::string::npos);
 }
 
-std::ostream &Node::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Object::writeToStream(stream, false);
-	stream << ",name:\"" << _name << "\"";
-	stream << ",metadatas:" << Json::Value(_metadatas).serialize();
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void Node::writeToJson(Json::Object &json) const {
+	Object::writeToJson(json);
+
+	json["name"] = Json::string(_name);
+	json["metadatas"] = Json::Value(_metadatas);
+	json["world"] = _world.expired() ? Json::null() : Json::number(_world.lock()->getId());
 }
 
 void Node::update(float deltaTime) {
@@ -102,7 +103,7 @@ bool Node::isDescendantOf(const std::shared_ptr<Node> &node) const {
 	return false;
 }
 
-const std::vector<std::shared_ptr<Node>> &Node::getChildren() const {
+const std::list<std::shared_ptr<Node>> &Node::getChildren() const {
 	return _children;
 }
 
@@ -250,11 +251,12 @@ void Node::writeHierarchy(std::ostream &stream, bool colored, const std::string 
 		stream << _name << " [" << getClassName() << "] ";
 	}
 	stream << *this << std::endl;
-	for (size_t i = 0; i < _children.size(); i++) {
-		if (i == _children.size() - 1) {
-			_children[i]->writeHierarchy(stream, colored, linePrefix + lastPrefix, "└─", "  ");
+	const auto last = _children.back();
+	for (auto &child : _children) {
+		if (child == last) {
+			child->writeHierarchy(stream, colored, linePrefix + lastPrefix, "└─", "  ");
 		} else {
-			_children[i]->writeHierarchy(stream, colored, linePrefix + lastPrefix, "├─", "│ ");
+			child->writeHierarchy(stream, colored, linePrefix + lastPrefix, "├─", "│ ");
 		}
 	}
 }

@@ -2,6 +2,8 @@
 
 #include "Scene/Node/WireframeShape.hpp"
 
+#include "Utils/Glm.hpp"
+
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/io.hpp>
 
@@ -13,27 +15,23 @@ WireframeShape::WireframeShape(const std::string &name)
 	: RenderableNode(name), _color(glm::vec3(1.0f)), _thickness(1.0f), _points(), _drawLine(true), _ignoreDepth(false) {
 }
 
-std::ostream &WireframeShape::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	RenderableNode::writeToStream(stream, false);
-	stream << ",color:" << _color;
-	stream << ",thickness:" << _thickness;
-	stream << ",points:[";
-	for (std::size_t i = 0; i < _points.size(); i++) {
-		if (i > 0)
-			stream << ",";
-		stream << "[";
-		for (std::size_t j = 0; j < _points[i].size(); j++) {
-			if (j > 0)
-				stream << ",";
-			stream << _points[i][j];
+void WireframeShape::writeToJson(Json::Object &json) const {
+	RenderableNode::writeToJson(json);
+
+	json["color"] = to_json(_color);
+	json["thickness"] = Json::number(_thickness);
+
+	auto &points_json((json["points"] = Json::array()).get<Json::Array>());
+	for (const auto &line : _points) {
+		auto &line_json((points_json.emplace_back() = Json::array()).get<Json::Array>());
+
+		for (const auto &point : line) {
+			line_json.push_back(to_json(point));
 		}
-		stream << "]";
 	}
-	stream << "],drawLine:" << _drawLine;
-	stream << ",ignoreDepth:" << _ignoreDepth;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+
+	json["draw_line"] = Json::boolean(_drawLine);
+	json["ignore_depth"] = Json::boolean(_ignoreDepth);
 }
 
 glm::vec3 WireframeShape::getColor() const {

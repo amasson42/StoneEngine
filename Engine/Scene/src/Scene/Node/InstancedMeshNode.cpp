@@ -2,8 +2,6 @@
 
 #include "Scene/Node/InstancedMeshNode.hpp"
 
-#include "Scene/RendererObjectManager.hpp"
-
 namespace Stone::Scene {
 
 STONE_NODE_IMPLEMENTATION(InstancedMeshNode)
@@ -11,12 +9,10 @@ STONE_NODE_IMPLEMENTATION(InstancedMeshNode)
 InstancedMeshNode::InstancedMeshNode(const std::string &name) : MeshNode(name), _instancesTransforms() {
 }
 
-std::ostream &InstancedMeshNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	MeshNode::writeToStream(stream, false);
-	stream << ",instances:" << _instancesTransforms.size();
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void InstancedMeshNode::writeToJson(Json::Object &json) const {
+	MeshNode::writeToJson(json);
+
+	json["instances"] = Json::number(static_cast<double>(_instancesTransforms.size()));
 }
 
 void InstancedMeshNode::addInstance(const Transform3D &transform) {

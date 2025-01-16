@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Scene/RenderContext.hpp"
+#include "Scene/Renderer/RenderContext.hpp"
 #include "Utils/SigSlot.hpp"
 
 namespace Stone::Scene {
@@ -77,7 +77,8 @@ public:
 	 */
 	template <typename T>
 	[[nodiscard]] std::shared_ptr<T> getRendererObject() const {
-		return std::dynamic_pointer_cast<T>(_rendererObject);
+		assert(std::dynamic_pointer_cast<T>(_rendererObject) != nullptr);
+		return std::static_pointer_cast<T>(_rendererObject);
 	}
 
 protected:

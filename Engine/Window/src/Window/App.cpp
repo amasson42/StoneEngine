@@ -11,7 +11,9 @@
 namespace Stone::Window {
 
 App::App() : std::enable_shared_from_this<App>(), _windows() {
-	glfwInit();
+	if (glfwInit() == GLFW_FALSE) {
+		throw std::runtime_error("Failed to initialize GLFW");
+	}
 }
 
 App::~App() {

@@ -1,8 +1,8 @@
-// Copyright 2024 StoneEngine
+// Copyright 2024 Stone-Engine
 
 #pragma once
 
-#include "Scene/RenderContext.hpp"
+#include "Scene/Renderer/RenderContext.hpp"
 
 #include <vulkan/vulkan.h>
 

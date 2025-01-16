@@ -1,0 +1,13 @@
+{
+    "diffuse": "texture",
+    "specular": "texture",
+    "ambient": "scalar",
+    "emissive": "vector",
+    "shininess": "scalar",
+    "opacity": "texture",
+    "roughness": "scalar",
+    "metallic": "vector",
+    "normal": "vector",
+    "occlusion": "scalar",
+    "height": "vector"
+}

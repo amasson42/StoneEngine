@@ -17,12 +17,11 @@ std::shared_ptr<WorldNode> WorldNode::create() {
 WorldNode::WorldNode(const std::string &name) : Node(name), _activeCamera() {
 }
 
-std::ostream &WorldNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Node::writeToStream(stream, false);
-	stream << ",active_camera:" << (_activeCamera.expired() ? "null" : _activeCamera.lock()->getGlobalName());
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void WorldNode::writeToJson(Json::Object &json) const {
+	Node::writeToJson(json);
+
+	json["active_camera"] =
+		!_activeCamera.expired() ? Json::string(_activeCamera.lock()->getGlobalName()) : Json::null();
 }
 
 void WorldNode::setRenderer(const std::shared_ptr<ISceneRenderer> &renderer) {

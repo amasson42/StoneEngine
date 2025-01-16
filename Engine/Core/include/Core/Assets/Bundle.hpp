@@ -5,8 +5,6 @@
 #include "Core/Assets/Resource.hpp"
 #include "Core/Object.hpp"
 
-#include <unordered_map>
-
 namespace Stone::Core::Assets {
 
 class Bundle : public Object {
@@ -19,7 +17,7 @@ public:
 
 	~Bundle() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	template <typename ResourceType, typename... Args>
 	std::shared_ptr<ResourceType> loadResource(const std::string &filepath, Args... args) {

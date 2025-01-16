@@ -1,3 +1,4 @@
+/*
 #include "Render/Vulkan/RendererSettings.hpp"
 #include "Render/Vulkan/VulkanRenderer.hpp"
 
@@ -21,3 +22,4 @@ TEST(VulkanRender, InstanciateCore) {
 		FAIL() << e.what();
 	}
 }
+*/

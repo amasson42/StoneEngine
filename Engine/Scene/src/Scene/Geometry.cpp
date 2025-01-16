@@ -19,8 +19,8 @@ std::pair<std::vector<uint32_t>, std::vector<glm::vec3>> generateGeometryMesh(co
 	std::vector<uint32_t> indices;
 	std::vector<glm::vec3> vertices;
 
-	const float phiStep = M_PIf32 / (float)rings;
-	const float thetaStep = 2 * M_PIf32 / (float)rings;
+	const float phiStep = (float)M_PI / (float)rings;
+	const float thetaStep = 2.0f * (float)M_PI / (float)rings;
 
 	for (int i = 0; i <= rings; i++) {
 		const float phi = (float)i * phiStep;

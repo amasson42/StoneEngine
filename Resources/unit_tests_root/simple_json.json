@@ -1,0 +1,21 @@
+{
+    "Name": "Stone",
+    "Function": "Engine",
+    "Renderers": [
+        {
+            "Name": "OpenGL",
+            "Performance": "Medium",
+            "Ready": true
+        },
+        {
+            "Name": "Vulkan",
+            "Performance": "High",
+            "Ready": true
+        },
+        {
+            "Name": "Metal",
+            "Performance": "High",
+            "Ready": false
+        }
+    ]
+}

@@ -4,12 +4,9 @@
 
 namespace Stone::Render::Vulkan {
 
-Shader::Shader(const std::shared_ptr<Scene::Shader> &shader, const std::shared_ptr<VulkanRenderer> &renderer) {
+Shader::Shader(const std::shared_ptr<Scene::FragmentShader> &shader, const std::shared_ptr<VulkanRenderer> &renderer) {
 	(void)shader;
 	(void)renderer;
-}
-
-Shader::~Shader() {
 }
 
 void Shader::render(Scene::RenderContext &context) {

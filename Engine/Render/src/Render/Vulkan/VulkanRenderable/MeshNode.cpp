@@ -13,7 +13,6 @@
 #include "Scene/Renderable/Mesh.hpp"
 #include "Scene/Renderable/Shader.hpp"
 #include "Scene/Renderable/Texture.hpp"
-#include "Scene/RenderContext.hpp"
 #include "Texture.hpp"
 #include "Utils/FileSystem.hpp"
 
@@ -82,12 +81,25 @@ void MeshNode::_createDescriptorSetLayout() {
 
 	auto material = _sceneMeshNode.lock()->getMaterial();
 	if (material) {
-		auto shader = material->getFragmentShader();
+		auto shader = material->getFragmentShader(); // TODO: Take default fragment shader if none is found
 		if (shader) {
 			material->forEachTextures(
-				[&](const std::pair<const std::string, std::shared_ptr<Scene::Texture>> &texture) {
+				[&](const Scene::Material::Location &loc, const std::shared_ptr<Scene::Texture> &texture) {
+					(void)texture;
+
 					VkDescriptorSetLayoutBinding samplerLayoutBinding;
-					samplerLayoutBinding.binding = shader->getLocation(texture.first);
+
+					// TODO: Factor this code in scene function
+					int location = -1;
+					if (std::holds_alternative<int>(loc)) {
+						location = std::get<int>(loc);
+					} else if (std::holds_alternative<std::string>(loc)) {
+						location = shader->getLocation(std::get<std::string>(loc));
+					}
+					if (location == -1) {
+						return;
+					}
+					samplerLayoutBinding.binding = location;
 					samplerLayoutBinding.descriptorCount = 1;
 					samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -388,7 +400,9 @@ void MeshNode::_createDescriptorPool(const std::shared_ptr<SwapChain> &swapChain
 		auto shader = material->getFragmentShader();
 		if (shader) {
 			material->forEachTextures(
-				[&](const std::pair<const std::string, std::shared_ptr<Scene::Texture>> &texture) {
+				[&](const Scene::Material::Location &location, const std::shared_ptr<Scene::Texture> &texture) {
+					(void)location;
+					(void)texture;
 					VkDescriptorPoolSize poolSize = {};
 					poolSize.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 					poolSize.descriptorCount = swapChain->getImageCount();
@@ -450,8 +464,18 @@ void MeshNode::_createDescriptorSets(const std::shared_ptr<SwapChain> &swapChain
 			auto shader = material->getFragmentShader();
 			if (shader) {
 				material->forEachTextures(
-					[&](const std::pair<const std::string, std::shared_ptr<Scene::Texture>> &texture) {
-						auto textureObject = texture.second->getRendererObject<Texture>();
+					[&](const Scene::Material::Location &loc, const std::shared_ptr<Scene::Texture> &texture) {
+						int location = -1;
+						if (std::holds_alternative<int>(loc)) {
+							location = std::get<int>(loc);
+						} else if (std::holds_alternative<std::string>(loc)) {
+							location = shader->getLocation(std::get<std::string>(loc));
+						}
+						if (location == -1) {
+							return;
+						}
+
+						auto textureObject = texture->getRendererObject<Texture>();
 
 						imagesInfo.push_back({});
 						VkDescriptorImageInfo &imageInfo(imagesInfo.back());
@@ -462,7 +486,7 @@ void MeshNode::_createDescriptorSets(const std::shared_ptr<SwapChain> &swapChain
 						VkWriteDescriptorSet descriptorWrite = {};
 						descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 						descriptorWrite.dstSet = _descriptorSets[i];
-						descriptorWrite.dstBinding = shader->getLocation(texture.first);
+						descriptorWrite.dstBinding = location;
 						descriptorWrite.dstArrayElement = 0;
 						descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 						descriptorWrite.descriptorCount = 1;

@@ -5,11 +5,10 @@
 #include "Core/Object.hpp"
 #include "Logging/TermColor.hpp"
 #include "Scene/Node/NodeMacros.hpp"
-#include "Scene/RenderContext.hpp"
-#include "Utils/Json.hpp"
+#include "Scene/Renderer/RenderContext.hpp"
 
 #include <functional>
-#include <vector>
+#include <list>
 
 namespace Stone::Scene {
 
@@ -23,7 +22,7 @@ class WorldNode;
  * the node hierarchy, updating and rendering nodes, and accessing node properties.
  */
 class Node : public Core::Object {
-	STONE_NODE(Node);
+	STONE_OBJECT(Node);
 
 public:
 	explicit Node(const std::string &name = "node");
@@ -38,7 +37,10 @@ public:
 	 * @param closing_bracer Whether to write the closing brace '}' after writing the node.
 	 * @return The output stream.
 	 */
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
+
+	const static std::string nodeClassName;
+	virtual const char *getNodeClassName() const;
 
 	/**
 	 * @brief Updates the node.
@@ -139,7 +141,7 @@ public:
 	/**
 	 * @brief Gets the children nodes of this node.
 	 */
-	const std::vector<std::shared_ptr<Node>> &getChildren() const;
+	const std::list<std::shared_ptr<Node>> &getChildren() const;
 
 	/**
 	 * @brief Gets the child node with the given name.
@@ -296,10 +298,10 @@ public:
 	Json::Object &getMetadatas();
 
 protected:
-	std::string _name;							  /**< The name of the node. */
-	std::vector<std::shared_ptr<Node>> _children; /**< The children nodes of this node. */
-	std::weak_ptr<Node> _parent;				  /**< The parent node of this node. */
-	std::weak_ptr<WorldNode> _world;			  /**< The world node that this node belongs to. */
+	std::string _name;							/**< The name of the node. */
+	std::list<std::shared_ptr<Node>> _children; /**< The children nodes of this node. */
+	std::weak_ptr<Node> _parent;				/**< The parent node of this node. */
+	std::weak_ptr<WorldNode> _world;			/**< The world node that this node belongs to. */
 
 	Json::Object _metadatas; /**< Metadata of the node */
 

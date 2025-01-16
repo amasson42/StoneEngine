@@ -4,7 +4,6 @@
 
 #include "Core/Assets/Resource.hpp"
 #include "SceneTypes.hpp"
-#include "Utils/Json.hpp"
 
 namespace Stone::Scene {
 
@@ -22,7 +21,7 @@ public:
 
 	~AssetResource() override = default;
 
-	std::ostream &writeToStream(std::ostream &stream, bool closing_bracer) const override;
+	void writeToJson(Json::Object &json) const override;
 
 	const std::vector<std::shared_ptr<IMeshObject>> &getMeshes() const;
 	std::vector<std::shared_ptr<IMeshObject>> &getMeshesRef();

@@ -29,7 +29,7 @@ void RendererObjectManager::updateMeshNode(const std::shared_ptr<Scene::MeshNode
 	}
 
 	auto newMeshNode = std::make_shared<Vulkan::MeshNode>(meshNode, _renderer);
-	setRendererObjectTo(meshNode.get(), newMeshNode);
+	updateRendererObject(*meshNode, newMeshNode);
 }
 
 void RendererObjectManager::updateMaterial(const std::shared_ptr<Scene::Material> &material) {
@@ -40,7 +40,7 @@ void RendererObjectManager::updateMaterial(const std::shared_ptr<Scene::Material
 	}
 
 	auto newMaterial = std::make_shared<Vulkan::Material>(material, _renderer);
-	setRendererObjectTo(material.get(), newMaterial);
+	updateRendererObject(*material, newMaterial);
 }
 
 void RendererObjectManager::updateDynamicMesh(const std::shared_ptr<Scene::DynamicMesh> &mesh) {
@@ -51,7 +51,7 @@ void RendererObjectManager::updateDynamicMesh(const std::shared_ptr<Scene::Dynam
 	}
 
 	auto newMesh = std::make_shared<Vulkan::Mesh>(mesh, _renderer);
-	setRendererObjectTo(mesh.get(), newMesh);
+	updateRendererObject(*mesh, newMesh);
 }
 
 void RendererObjectManager::updateTexture(const std::shared_ptr<Scene::Texture> &texture) {
@@ -62,18 +62,18 @@ void RendererObjectManager::updateTexture(const std::shared_ptr<Scene::Texture> 
 	}
 
 	auto newTexture = std::make_shared<Vulkan::Texture>(texture, _renderer);
-	setRendererObjectTo(texture.get(), newTexture);
+	updateRendererObject(*texture, newTexture);
 }
 
-void RendererObjectManager::updateShader(const std::shared_ptr<Scene::Shader> &shader) {
-	Scene::RendererObjectManager::updateShader(shader);
+void RendererObjectManager::updateFragmentShader(const std::shared_ptr<Scene::FragmentShader> &shader) {
+	Scene::RendererObjectManager::updateFragmentShader(shader);
 
 	if (shader->getRendererObject<Vulkan::Shader>()) {
 		return;
 	}
 
 	auto newShader = std::make_shared<Vulkan::Shader>(shader, _renderer);
-	setRendererObjectTo(shader.get(), newShader);
+	updateRendererObject(*shader, newShader);
 }
 
 } // namespace Stone::Render::Vulkan

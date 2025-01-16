@@ -3,6 +3,7 @@
 #include "Scene/Transform.hpp"
 
 #include "Utils/Glm.hpp"
+#include "Utils/Json.hpp"
 
 #include <glm/gtx/matrix_decompose.hpp>
 
@@ -81,9 +82,12 @@ glm::mat3 Transform2D::getTransformMatrix() const {
 	return transformMatrix;
 }
 
-std::ostream &Transform2D::write(std::ostream &stream) const {
-	stream << "{pos:" << _position << ",rot:" << _rotation << ",scale:" << _scale << "}";
-	return stream;
+Json::Value Transform2D::toJson() const {
+	return Json::object({
+		{"position",		 to_json(_position)},
+		{"rotation", Json::number(_rotation)},
+		{	 "scale",		  to_json(_scale)},
+	});
 }
 
 void Transform2D::calculateTransformMatrix(glm::mat3 &m) const {
@@ -193,9 +197,12 @@ glm::mat4 Transform3D::getTransformMatrix() const {
 	return transformMatrix;
 }
 
-std::ostream &Transform3D::write(std::ostream &stream) const {
-	stream << "{pos:" << _position << ",rot:" << _rotation << ",scale:" << _scale << "}";
-	return stream;
+Json::Value Transform3D::toJson() const {
+	return Json::object({
+		{"position", to_json(_position)},
+		{"rotation", to_json(_rotation)},
+		{	 "scale",	  to_json(_scale)},
+	});
 }
 
 void Transform3D::calculateTransformMatrix(glm::mat4 &m) const {
@@ -207,10 +214,13 @@ void Transform3D::calculateTransformMatrix(glm::mat4 &m) const {
 
 } // namespace Stone::Scene
 
+
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform2D &transform) {
-	return transform.write(stream);
+	Json::Value json = transform.toJson();
+	return stream << json;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Stone::Scene::Transform3D &transform) {
-	return transform.write(stream);
+	Json::Value json = transform.toJson();
+	return stream << json;
 }

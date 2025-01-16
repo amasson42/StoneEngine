@@ -25,7 +25,8 @@
         "SKIP_TESTS": {
           "type": "BOOL",
           "value": "OFF"
-        }
+        },
+        "GRAPHICS_API": "AUTO"
       },
       "condition": {
         "type": "notEquals",

@@ -23,7 +23,7 @@ class Mesh : public Scene::IRendererObject {
 public:
 	Mesh(const std::shared_ptr<Scene::DynamicMesh> &mesh, const std::shared_ptr<VulkanRenderer> &renderer);
 
-	~Mesh() override;
+	~Mesh() override = default;
 
 	void render(Scene::RenderContext &context) override;
 };

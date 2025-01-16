@@ -2,8 +2,6 @@
 
 #include "Scene/Node/PivotNode.hpp"
 
-#include <sstream>
-
 namespace Stone::Scene {
 
 STONE_NODE_IMPLEMENTATION(PivotNode)
@@ -11,12 +9,10 @@ STONE_NODE_IMPLEMENTATION(PivotNode)
 PivotNode::PivotNode(const std::string &name) : Node(name), _transform() {
 }
 
-std::ostream &PivotNode::writeToStream(std::ostream &stream, bool closing_bracer) const {
-	Node::writeToStream(stream, false);
-	stream << ",transform:" << _transform;
-	if (closing_bracer)
-		stream << "}";
-	return stream;
+void PivotNode::writeToJson(Json::Object &json) const {
+	Node::writeToJson(json);
+
+	json["transform"] = _transform.toJson();
 }
 
 void PivotNode::render(RenderContext &context) {

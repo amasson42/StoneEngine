@@ -9,9 +9,6 @@ Material::Material(const std::shared_ptr<Scene::Material> &material, const std::
 	(void)renderer;
 }
 
-Material::~Material() {
-}
-
 void Material::render(Scene::RenderContext &context) {
 	(void)context;
 }

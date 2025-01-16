@@ -14,6 +14,7 @@ VulkanDevice::VulkanDevice(std::shared_ptr<VulkanCore> core) : _core(std::move(c
 }
 
 VulkanDevice::~VulkanDevice() {
+	_core.reset();
 }
 
 void VulkanDevice::waitIdle() const {
