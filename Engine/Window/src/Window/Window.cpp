@@ -47,7 +47,7 @@ std::shared_ptr<Stone::Scene::WorldNode> Window::getWorld() const {
 }
 
 void Window::_onMouseMoveCallback(double x, double y) {
-	std::cout << this << ":mouse move " << x << " " << y << std::endl;
+	// std::cout << this << ":mouse move " << x << " " << y << std::endl;
 }
 
 void Window::_onMouseButtonCallback(int button, int action, int mods) {

@@ -43,6 +43,7 @@ void main() {
 
 )");
 
+		// TODO: Write fragment shader using all lights and pbr
 		GlFragmentShader fragmentShader(R"(#version 400 core
 
 in vec2 fragUV;
@@ -54,7 +55,8 @@ uniform sampler2D u_albedo_spec;
 out vec4 FragColor;
 
 void main() {
-	FragColor = vec4(fragUV, 1.0, 1.0);
+	// FragColor = vec4(fragUV, 1.0, 1.0);
+	FragColor = vec4(vec3(texture(u_albedo_spec, fragUV)), 1.0);
 }
 
 )");
@@ -74,6 +76,9 @@ void main() {
 
 	void render() {
 		program->use();
+
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_STENCIL_TEST);
 
 		program->setUniformTexture("u_position", *gPosition, 0);
 		program->setUniformTexture("u_normal", *gNormal, 1);

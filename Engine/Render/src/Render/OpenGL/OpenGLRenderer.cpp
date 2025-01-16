@@ -47,6 +47,7 @@ void OpenGLRenderer::renderWorld(const std::shared_ptr<Scene::WorldNode> &world)
 
 	// Reset framebuffers
 
+	_gBuffer->bind();
 	glViewport(0, 0, static_cast<GLsizei>(_frameSize.first), static_cast<GLsizei>(_frameSize.second));
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -56,8 +57,6 @@ void OpenGLRenderer::renderWorld(const std::shared_ptr<Scene::WorldNode> &world)
 	context.gBuffer = _gBuffer.get();
 
 	world->initializeRenderContext(context);
-
-	_gBuffer->bind();
 	world->render(context);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

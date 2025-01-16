@@ -10,16 +10,16 @@ class GlFramebufferMesh {
 public:
 	GlFramebufferMesh() {
 		float vertices[] = {
-			// positions          // texture coords
-			1.0f,  1.0f,  1.0f, 1.0f, // top right
-			1.0f,  -1.0f, 1.0f, 0.0f, // bottom right
+			// pos      | uv
 			-1.0f, -1.0f, 0.0f, 0.0f, // bottom left
-			-1.0f, 1.0f,  0.0f, 1.0f  // top left
+			1.0f,  -1.0f, 1.0f, 0.0f, // bottom right
+			-1.0f, 1.0f,  0.0f, 1.0f, // top left
+			1.0f,  1.0f,  1.0f, 1.0f, // top right
 		};
 
 		unsigned int indices[] = {
-			0, 1, 3, // first triangle
-			1, 2, 3	 // second triangle
+			0, 3, 2, // top left
+			0, 1, 3	 // bottom right
 		};
 
 		glGenVertexArrays(1, &vao);

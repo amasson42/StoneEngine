@@ -52,9 +52,9 @@ void MeshNode::render(Scene::RenderContext &context) {
 		_material->setUniforms(Scene::MeshType::Standard);
 	}
 
-	program->setUniform("model", context.mvp.modelMatrix);
-	program->setUniform("view", context.mvp.viewMatrix);
-	program->setUniform("projection", context.mvp.projMatrix);
+	program->setUniform("u_mat_model", context.mvp.modelMatrix);
+	program->setUniform("u_mat_view", context.mvp.viewMatrix);
+	program->setUniform("u_mat_projection", context.mvp.projMatrix);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);

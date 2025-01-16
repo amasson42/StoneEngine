@@ -72,7 +72,8 @@ int main(int argc, char **argv) {
 		});
 
 		// Create a MeshNode
-		auto meshNode = window->getWorld()->addChild<Stone::Scene::MeshNode>();
+		auto meshNode = std::make_shared<Stone::Scene::MeshNode>();
+		window->getWorld()->addChild(meshNode);
 		meshNode->setMesh(mesh);
 
 		// Create a Texture
@@ -94,7 +95,8 @@ int main(int argc, char **argv) {
 		// Create a second MeshNode with the same mesh
 		auto meshRotatingNode = window->getWorld()->addChild<RotatingNode>();
 		meshRotatingNode->getTransform().setPosition({0.0f, 0.0f, 0.0f});
-		auto secondMeshNode = meshRotatingNode->addChild<Stone::Scene::MeshNode>();
+		auto secondMeshNode = std::make_shared<Stone::Scene::MeshNode>();
+		meshRotatingNode->addChild(secondMeshNode);
 		meshRotatingNode->setRotationSpeed({0.0f, 0.4f, 0.0f});
 		secondMeshNode->setMesh(mesh);
 
